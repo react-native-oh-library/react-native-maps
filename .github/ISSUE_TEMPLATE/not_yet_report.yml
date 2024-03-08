@@ -1,4 +1,5 @@
 name: "not yet"
+description: add not yet
 labels: [not yet]
 body:
   - type: textarea
