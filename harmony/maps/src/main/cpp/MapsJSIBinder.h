@@ -11,6 +11,7 @@ namespace rnoh {
             object.setProperty(rt, "initialRegion", "Region");
             object.setProperty(rt, "camera", "Camera");
             object.setProperty(rt, "initialCamera", "Camera");
+            object.setProperty(rt, "mapPadding", "EdgePadding");
             object.setProperty(rt, "paddingAdjustmentBehavior", "PaddingAdjustmentBehavior");
             object.setProperty(rt, "liteMode", "bool");
             object.setProperty(rt, "mapType", "string");

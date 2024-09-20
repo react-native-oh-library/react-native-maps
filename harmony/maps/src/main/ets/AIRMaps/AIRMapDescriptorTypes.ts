@@ -29,6 +29,7 @@ export interface AIRMapRawProps extends ViewRawProps {
   camera?: Camera;
   customMapStyle?: MapStyleElement[];
   followsUserLocation?: boolean;
+  isAccessibilityElement?: boolean;
   initialCamera?: Camera;
   region?: Region;
   initialRegion?: Region;

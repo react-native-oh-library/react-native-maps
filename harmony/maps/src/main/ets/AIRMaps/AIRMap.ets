@@ -222,10 +222,10 @@ export struct AIRMap {
       maxZoom: this.descriptor.rawProps.maxZoomLevel,
       minZoom: this.descriptor.rawProps.minZoomLevel,
       rotateGesturesEnabled: this.descriptor.rawProps.rotateEnabled,
-      scaleControlsEnabled: this.descriptor.rawProps.scrollEnabled,
+      scaleControlsEnabled: this.descriptor.rawProps.showsScale,
       scrollGesturesEnabled: this.descriptor.rawProps.scrollEnabled,
       tiltGesturesEnabled: true,
-      zoomGesturesEnabled: this.descriptor.rawProps.zoomTapEnabled,
+      zoomGesturesEnabled: this.descriptor.rawProps.zoomEnabled,
       zoomControlsEnabled: this.descriptor.rawProps.zoomControlEnabled,
       myLocationControlsEnabled: this.descriptor.rawProps.showsMyLocationButton,
       compassControlsEnabled: this.descriptor.rawProps.showsCompass,
@@ -284,7 +284,6 @@ export struct AIRMap {
       lat = this.descriptor.rawProps.camera.center.latitude;
       lng = this.descriptor.rawProps.camera.center.longitude;
       zoom = this.descriptor.rawProps.camera.zoom;
-      return { center: {latitude: this.descriptor.rawProps.camera.center.latitude} } as Camera;
     } else if (this.descriptor.rawProps.initialCamera) {
       lat = this.descriptor.rawProps.initialCamera.center.latitude;
       lng = this.descriptor.rawProps.initialCamera.center.longitude;
@@ -292,7 +291,7 @@ export struct AIRMap {
     } else if (this.descriptor.rawProps.region) {
       lat = this.descriptor.rawProps.region.latitude;
       lng = this.descriptor.rawProps.region.longitude;
-    }else if (this.descriptor.rawProps.initialRegion) {
+    } else if (this.descriptor.rawProps.initialRegion) {
       lat = this.descriptor.rawProps.initialRegion.latitude;
       lng = this.descriptor.rawProps.initialRegion.longitude;
     }

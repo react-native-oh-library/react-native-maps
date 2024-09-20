@@ -97,20 +97,19 @@ export class MapsManager{
         longitude: desc.rawProps.coordinate.longitude
       },
       rotation: desc.rawProps.rotation,
-      visible: true,
-      zIndex: desc.rawProps.zIndex,
-      alpha: desc.rawProps.opacity?desc.rawProps.opacity:1.0,
+      icon: this.imageSourceConvert(desc.rawProps.image),
+      alpha: desc.rawProps.opacity ?? 1.0,
       anchorU: this.getPointX(desc.rawProps.anchor, 0.5),
       anchorV: this.getPointY(desc.rawProps.anchor, 1),
-      clickable: desc.rawProps.tappable===undefined?true:desc.rawProps.tappable,
+      clickable: desc.rawProps.tappable === undefined ? true : desc.rawProps.tappable,
       draggable: desc.rawProps.draggable,
-      icon: this.imageSourceConvert(desc.rawProps.image),
-
+      flat: desc.rawProps.flat,
       title: desc.rawProps.title,
       snippet: desc.rawProps.description,
-      flat: desc.rawProps.flat,
       infoWindowAnchorU: this.getPointX(desc.rawProps.calloutAnchor, 0.5),
       infoWindowAnchorV: this.getPointX(desc.rawProps.calloutAnchor, 0),
+      zIndex: desc.rawProps.zIndex,
+      visible: true,
     };
     this.mapController.addMarker(markerOptions).then(marker => {
       LWLog('MapsManager.addMarker----------marker=' + marker.getId())
@@ -143,17 +142,17 @@ export class MapsManager{
     let polylineOption: mapCommon.MapPolylineOptions = {
       points: desc.rawProps.coordinates,
       clickable: desc.rawProps.tappable,
+      color: this.colorCovertHex(desc.rawProps.strokeColor, 0XFF000000),
+      colors: desc.rawProps.strokeColors?.map((color, i): number => { return this.colorCovertHex(color) }),
       startCap: this.lineCapTypeConvert(desc.rawProps.lineCap),
       endCap: this.lineCapTypeConvert(desc.rawProps.lineCap),
       geodesic: desc.rawProps.geodesic,
       jointType: this.lineJoinTypeConvert(desc.rawProps.lineJoin),
-      visible: true,
+      patterns: this.lineDashPatternConvert(desc.rawProps.lineDashPattern),
       width: desc.rawProps.strokeWidth,
-      zIndex: 0,
       gradient: false,
-      color: this.colorCovertHex(desc.rawProps.strokeColor, 0XFF000000),
-      colors: desc.rawProps.strokeColors?.map((color, i): number => { return this.colorCovertHex(color) }),
-      patterns: this.lineDashPatternConvert(desc.rawProps.lineDashPattern)
+      visible: true,
+      zIndex: 0,
     }
     // 创建polyline
     this.mapController.addPolyline(polylineOption).then(mapPolyline=>{
@@ -170,6 +169,7 @@ export class MapsManager{
     }
     let polygonOptions: mapCommon.MapPolygonOptions = {
       points: desc.rawProps.coordinates,
+      holes: desc.rawProps.holes,
       clickable: desc.rawProps.tappable,
       fillColor: this.colorCovertHex(desc.rawProps.fillColor, 0XFF000000),
       geodesic: desc.rawProps.geodesic,
@@ -179,7 +179,6 @@ export class MapsManager{
       strokeWidth: desc.rawProps.strokeWidth,
       visible: true,
       zIndex: desc.rawProps.zIndex,
-      holes: desc.rawProps.holes,
     }
     // 创建多边形
     this.mapController.addPolygon(polygonOptions).then(mapPolygon=>{
@@ -203,10 +202,10 @@ export class MapsManager{
       clickable: true,
       fillColor: this.colorCovertHex(desc.rawProps.fillColor, 0XFF000000),
       strokeColor: this.colorCovertHex(desc.rawProps.strokeColor, 0XFF000000),
+      patterns: this.lineDashPatternConvert(desc.rawProps.lineDashPattern),
       strokeWidth: desc.rawProps.strokeWidth,
       visible: true,
       zIndex: desc.rawProps.zIndex,
-      patterns: this.lineDashPatternConvert(desc.rawProps.lineDashPattern)
     }
     // 创建Circle
     this.mapController.addCircle(mapCircleOptions).then(mapCircle=>{
@@ -309,8 +308,13 @@ export class MapsManager{
   lineDashPatternConvert(target: number[]){
     if (target && target.length > 0) {
       let result = new Array<mapCommon.PatternItem>();
-      target.forEach(element => {
-        result.push({type: mapCommon.PatternItemType.DASH, length: element})
+      const source = target.length % 2 === 0 ? target : [...target, ...target];
+      source.forEach((element, index) => {
+        if (index % 2 === 0) {
+          result.push({type: mapCommon.PatternItemType.DASH, length: element});
+        } else {
+          result.push({type: mapCommon.PatternItemType.GAP, length: element});
+        }
       });
       return result;
     }

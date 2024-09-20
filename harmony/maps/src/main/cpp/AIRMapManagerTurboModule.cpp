@@ -78,6 +78,30 @@ static jsi::Value __hostFunction_AIRMapManagerTurboModule_coordinateForPoint(jsi
     return static_cast<ArkTSTurboModule &>(turboModule).call(rt, "coordinateForPoint", args, count);
 }
 
+static jsi::Value __hostFunction_AIRMapManagerTurboModule_setIndoorActiveLevelIndex(jsi::Runtime &rt,
+                                                                             react::TurboModule &turboModule,
+                                                                             const jsi::Value *args, size_t count) {
+    return static_cast<ArkTSTurboModule &>(turboModule).call(rt, "setIndoorActiveLevelIndex", args, count);
+}
+
+static jsi::Value __hostFunction_AIRMapManagerTurboModule_fitToElements(jsi::Runtime &rt,
+                                                                             react::TurboModule &turboModule,
+                                                                             const jsi::Value *args, size_t count) {
+    return static_cast<ArkTSTurboModule &>(turboModule).call(rt, "fitToElements", args, count);
+}
+
+static jsi::Value __hostFunction_AIRMapManagerTurboModule_fitToSuppliedMarkers(jsi::Runtime &rt,
+                                                                             react::TurboModule &turboModule,
+                                                                             const jsi::Value *args, size_t count) {
+    return static_cast<ArkTSTurboModule &>(turboModule).call(rt, "fitToSuppliedMarkers", args, count);
+}
+
+static jsi::Value __hostFunction_AIRMapManagerTurboModule_getMarkersFrames(jsi::Runtime &rt,
+                                                                             react::TurboModule &turboModule,
+                                                                             const jsi::Value *args, size_t count) {
+    return static_cast<ArkTSTurboModule &>(turboModule).callAsync(rt, "getMarkersFrames", args, count);
+}
+
 AIRMapManagerTurboModule::AIRMapManagerTurboModule(const ArkTSTurboModule::Context ctx, const std::string name)
     : ArkTSTurboModule(ctx, name) {
     methodMap_["getCamera"] = MethodMetadata{0, __hostFunction_AIRMapManagerTurboModule_getCamera};
@@ -92,4 +116,9 @@ AIRMapManagerTurboModule::AIRMapManagerTurboModule(const ArkTSTurboModule::Conte
     methodMap_["takeSnapshot"] = MethodMetadata{1, __hostFunction_AIRMapManagerTurboModule_takeSnapshot};
     methodMap_["pointForCoordinate"] = MethodMetadata{1, __hostFunction_AIRMapManagerTurboModule_pointForCoordinate};
     methodMap_["coordinateForPoint"] = MethodMetadata{1, __hostFunction_AIRMapManagerTurboModule_coordinateForPoint};
+    
+    methodMap_["setIndoorActiveLevelIndex"] = MethodMetadata{1, __hostFunction_AIRMapManagerTurboModule_setIndoorActiveLevelIndex};
+    methodMap_["fitToElements"] = MethodMetadata{1, __hostFunction_AIRMapManagerTurboModule_fitToElements};
+    methodMap_["fitToSuppliedMarkers"] = MethodMetadata{2, __hostFunction_AIRMapManagerTurboModule_fitToSuppliedMarkers};
+    methodMap_["getMarkersFrames"] = MethodMetadata{1, __hostFunction_AIRMapManagerTurboModule_getMarkersFrames};
 }

@@ -157,6 +157,14 @@ export type MapViewProps = ViewProps & {
   kmlSrc?: string;
 
   /**
+   * Determines whether the MapView captures VoiceOver touches or forwards them to children. When `true`, map markers are not visible to VoiceOver.
+   *
+   * @platform iOS: Supported
+   * @platform Android: Not Supported
+   */
+  isAccessibilityElement?: boolean;
+
+  /**
    * If set, changes the position of the "Legal" label link in Apple maps.
    *
    * @platform iOS: Apple Maps only

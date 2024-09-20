@@ -61,8 +61,12 @@ export class AIRMapManager extends TurboModule {
     return camera;
   }
 
-  //github api 上未标出
-  // public takeSnapshot(width: number, height: number, region: Region, format?: 'png' | 'jpg', quality?: number, result?: 'file' | 'base64', callback?: Function){
+  /**
+   * Takes a snapshot of the map and saves it to a picture file or returns the image as a base64 encoded string
+   *
+   * @param config Configuration options
+   * @returns Promise Promise with either the file-uri or base64 encoded string
+   */
   public takeSnapshot(config: SnapshotOptions): Promise<string>{
     return MapsTurboManager.getInstance().takeSnapshot(this.ctx, config);
   }
@@ -124,7 +128,7 @@ export class AIRMapManager extends TurboModule {
    */
   public getMarkersFrames(onlyVisible: Boolean){
     //todo 华为地图不支持
-    MapsTurboManager.getInstance().getMarkersFrames(onlyVisible);
+    return MapsTurboManager.getInstance().getMarkersFrames(onlyVisible);
   }
 
   public animateToRegion(region: Region, duration: number) {

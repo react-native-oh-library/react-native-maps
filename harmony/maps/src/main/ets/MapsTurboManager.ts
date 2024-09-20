@@ -256,12 +256,13 @@ export class MapsTurboManager{
       let width = config.width;
       let height = config.height;
       let quality = config.quality * 100;
-      let format = config.format === 'png'?'image/png':'image/jpg'
+      let format = config.format === 'png' ? 'image/png' : 'image/jpg';
+      const region = this.mapController.getCameraPosition().target; // 没有值时，取地图当前的中心位置
       LWLog('MapsTurboManager.takeSnapshot------>width=' + width + ' height=' + height + ' quality=' + quality + ' format=' + format);
       let option: staticMap.StaticMapOptions = {
         location: {
-          latitude: config.region?.latitude,
-          longitude: config.region?.longitude
+          latitude: config.region?.latitude ?? region.latitude,
+          longitude: config.region?.longitude ?? region.longitude
         },
         zoom: DEFAULT_ZOOM,
         imageWidth: width,
@@ -276,7 +277,7 @@ export class MapsTurboManager{
             let cacheFileUrl = "file://" + cacheFilePath;
             await this.savePixel2File(imagePixel, cacheFilePath);
             resolve(cacheFileUrl);
-          }else {
+          } else {
             const imagePackerApi: image.ImagePacker = image.createImagePacker();
             let packOpts: image.PackingOption = { format: format, quality: quality };
             imagePackerApi.packing(imagePixel, packOpts).then((readBuffer)=>{
@@ -298,7 +299,8 @@ export class MapsTurboManager{
   }
 
   public getMarkersFrames(onlyVisible: Boolean) {
-
+    //todo 华为地图不支持
+    return Promise.resolve({ 'key': {} });
   }
 
   public async savePixel2File(pm: image.PixelMap, filePath: string){
