@@ -111,7 +111,7 @@ export class MapsManager{
       zIndex: desc.rawProps.zIndex,
       visible: true,
     };
-    this.mapController.addMarker(markerOptions).then(marker => {
+    return this.mapController.addMarker(markerOptions).then(marker => {
       LWLog('MapsManager.addMarker----------marker=' + marker.getId())
       _this.setMarker(marker);
 
@@ -130,6 +130,7 @@ export class MapsManager{
       this.mapController?.on("markerDragEnd", (marker)=>{
         _this.ctx.rnInstance.emitComponentEvent(_this.descriptor.tag, AIR_MAP_MARKER_TYPE, { type: "onDragEnd", coordinate: marker.getPosition()  });
       })
+      return marker;
     });
   }
 
@@ -155,8 +156,9 @@ export class MapsManager{
       zIndex: 0,
     }
     // 创建polyline
-    this.mapController.addPolyline(polylineOption).then(mapPolyline=>{
+    return this.mapController.addPolyline(polylineOption).then(mapPolyline=>{
       LWLog('MapsManager.addPolyline----------polyline=' + mapPolyline)
+      return mapPolyline;
     });
 
   }
@@ -181,8 +183,9 @@ export class MapsManager{
       zIndex: desc.rawProps.zIndex,
     }
     // 创建多边形
-    this.mapController.addPolygon(polygonOptions).then(mapPolygon=>{
+    return this.mapController.addPolygon(polygonOptions).then(mapPolygon=>{
       LWLog('MapsManager.addPolygon----------polygon=' + mapPolygon)
+      return mapPolygon;
     });
 
   }
@@ -208,8 +211,9 @@ export class MapsManager{
       zIndex: desc.rawProps.zIndex,
     }
     // 创建Circle
-    this.mapController.addCircle(mapCircleOptions).then(mapCircle=>{
-      LWLog('MapsManager.addCircle----------circle=' + JSON.stringify(mapCircle))
+    return this.mapController.addCircle(mapCircleOptions).then(mapCircle=>{
+      LWLog('MapsManager.addCircle----------circle=' + JSON.stringify(mapCircle));
+      return mapCircle;
     });
   }
 

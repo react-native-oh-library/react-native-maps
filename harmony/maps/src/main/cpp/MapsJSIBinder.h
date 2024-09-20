@@ -186,7 +186,7 @@ namespace rnoh {
             object.setProperty(rt, "strokeWidth", "int");
             object.setProperty(rt, "color", "string");
             object.setProperty(rt, "lineDashPhase", "int");
-            object.setProperty(rt, "lineDashPattern", "arry");
+            object.setProperty(rt, "lineDashPattern", "array");
             object.setProperty(rt, "lineCap", "string");
             object.setProperty(rt, "lineJoin", "string");
             object.setProperty(rt, "miterLimit", "int");

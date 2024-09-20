@@ -24,6 +24,7 @@ import { ComponentBuilderContext, RNComponentContext } from '@rnoh/react-native-
 import { AIRMapPolylineDescriptor } from './AIRMapDescriptorTypes';
 import { MapsManager } from '../MapsManager';
 import { LWLog } from '../LWLog';
+import { map } from '@kit.MapKit';
 
 export const AIR_MAP_POLYLINE_TYPE: string = "AIRMapPolyline"
 
@@ -34,6 +35,7 @@ export struct AIRMapPolyline {
   @BuilderParam buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void
   @State descriptor: AIRMapPolylineDescriptor = {} as AIRMapPolylineDescriptor
   private unregisterDescriptorChangesListener?: () => void = undefined
+  private instance?: map.MapPolyline;
 
   aboutToAppear() {
     LWLog('AIRMapPolyline.aboutToAppear 初始化 AIRMapPolyline...')
@@ -41,21 +43,28 @@ export struct AIRMapPolyline {
     this.unregisterDescriptorChangesListener = this.ctx.descriptorRegistry.subscribeToDescriptorChanges(this.tag,
       (newDescriptor) => {
         this.descriptor = (newDescriptor as AIRMapPolylineDescriptor)
-        MapsManager.getInstance().addPolyline(this.descriptor);
+        this.setInstance();
       }
     )
 
     if (MapsManager.getInstance().isInitMapController()) {
-      MapsManager.getInstance().addPolyline(this.descriptor);
-    }else {
+      this.setInstance();
+    } else {
       setTimeout(()=>{
-        MapsManager.getInstance().addPolyline(this.descriptor);
+        this.setInstance();
       }, 500)
     }
   }
 
+  setInstance() {
+    MapsManager.getInstance().addPolyline(this.descriptor)?.then(instance => {
+      this.instance = instance;
+    });
+  }
+
   aboutToDisappear() {
-    this.unregisterDescriptorChangesListener?.()
+    this.unregisterDescriptorChangesListener?.();
+    this.instance?.remove();
   }
 
   build() {

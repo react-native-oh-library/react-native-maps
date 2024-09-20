@@ -80,17 +80,23 @@ export struct AIRMapMarker {
           this.marker?.startAnimation();
         } else if (command === 'redraw') {
           this.marker?.remove();
-          MapsManager.getInstance().addMarker(this, false);
+          this.setInstance();
         }
       }));
 
     if (MapsManager.getInstance().isInitMapController()) {
-      MapsManager.getInstance().addMarker(this, false);
-    }else {
+      this.setInstance();
+    } else {
       setTimeout(()=>{
-        MapsManager.getInstance().addMarker(this, false);
+        this.setInstance();
       }, 500)
     }
+  }
+
+  setInstance() {
+    MapsManager.getInstance().addMarker(this, false)?.then(instance => {
+      this.marker = instance;
+    });
   }
 
   private marker?: map.Marker;
@@ -100,7 +106,8 @@ export struct AIRMapMarker {
   }
 
   aboutToDisappear() {
-    this.cleanUpCallbacks.forEach(cb => cb())
+    this.cleanUpCallbacks.forEach(cb => cb());
+    this.marker?.remove();
   }
 
   build() {

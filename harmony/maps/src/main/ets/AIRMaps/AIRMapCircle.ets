@@ -24,6 +24,7 @@ import { ComponentBuilderContext, RNComponentContext } from '@rnoh/react-native-
 import { AIRMapCircleDescriptor } from './AIRMapDescriptorTypes';
 import { MapsManager } from '../MapsManager';
 import { LWLog } from '../LWLog';
+import { map } from '@kit.MapKit';
 
 export const AIR_MAP_CIRCLE_TYPE: string = "AIRMapCircle"
 
@@ -36,6 +37,7 @@ export struct AIRMapCircle {
   @BuilderParam buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void
   @State descriptor: AIRMapCircleDescriptor = {} as AIRMapCircleDescriptor
   private unregisterDescriptorChangesListener?: () => void = undefined
+  private instance?: map.MapCircle;
 
   aboutToAppear() {
     LWLog('AIRMapCircle.aboutToAppear 初始化 AIRMapCircle...')
@@ -43,21 +45,28 @@ export struct AIRMapCircle {
     this.unregisterDescriptorChangesListener = this.ctx.descriptorRegistry.subscribeToDescriptorChanges(this.tag,
       (newDescriptor) => {
         this.descriptor = (newDescriptor as AIRMapCircleDescriptor)
-        MapsManager.getInstance().addCircle(this.descriptor);
+        this.setInstance();
       }
     )
 
     if (MapsManager.getInstance().isInitMapController()) {
-      MapsManager.getInstance().addCircle(this.descriptor);
-    }else {
+      this.setInstance();
+    } else {
       setTimeout(()=>{
-        MapsManager.getInstance().addCircle(this.descriptor);
+        this.setInstance();
       }, 500)
     }
   }
 
+  setInstance() {
+    MapsManager.getInstance().addCircle(this.descriptor)?.then(instance => {
+      this.instance = instance;
+    });
+  }
+
   aboutToDisappear() {
     this.unregisterDescriptorChangesListener?.()
+    this.instance?.remove();
   }
 
   build() {
