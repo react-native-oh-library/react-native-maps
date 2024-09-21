@@ -43,7 +43,19 @@ export struct AIRMapPolyline {
     this.unregisterDescriptorChangesListener = this.ctx.descriptorRegistry.subscribeToDescriptorChanges(this.tag,
       (newDescriptor) => {
         this.descriptor = (newDescriptor as AIRMapPolylineDescriptor)
-        this.setInstance();
+        this.instance?.setPoints(this.descriptor.rawProps.coordinates);
+        this.instance?.setWidth(this.descriptor.rawProps.strokeWidth);
+        this.instance?.setColor(MapsManager.getInstance().colorCovertHex(this.descriptor.rawProps.strokeColor));
+        this.instance?.setColors(this.descriptor.rawProps.strokeColors.map((r) => {
+          return MapsManager.getInstance().colorCovertHex(r) as number;
+        }));
+        this.instance?.setStartCap(MapsManager.getInstance().lineCapTypeConvert(this.descriptor.rawProps.lineCap));
+        this.instance?.setEndCap(MapsManager.getInstance().lineCapTypeConvert(this.descriptor.rawProps.lineCap));
+        this.instance?.setJointType(MapsManager.getInstance().lineJoinTypeConvert(this.descriptor.rawProps.lineJoin));
+        this.instance?.setGeodesic(this.descriptor.rawProps.geodesic);
+        this.instance?.setPatterns(MapsManager.getInstance().lineDashPatternConvert(this.descriptor.rawProps.lineDashPattern));
+        this.instance?.setClickable(this.descriptor.rawProps.tappable);
+        this.instance?.setZIndex(this.descriptor.rawProps.zIndex);
       }
     )
 

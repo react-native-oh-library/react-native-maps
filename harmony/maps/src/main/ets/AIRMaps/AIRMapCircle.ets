@@ -45,7 +45,13 @@ export struct AIRMapCircle {
     this.unregisterDescriptorChangesListener = this.ctx.descriptorRegistry.subscribeToDescriptorChanges(this.tag,
       (newDescriptor) => {
         this.descriptor = (newDescriptor as AIRMapCircleDescriptor)
-        this.setInstance();
+        this.instance?.setCenter(this.descriptor.rawProps.center);
+        this.instance?.setRadius(this.descriptor.rawProps.radius);
+        this.instance?.setStrokeWidth(this.descriptor.rawProps.strokeWidth);
+        this.instance?.setStrokeColor(MapsManager.getInstance().colorCovertHex(this.descriptor.rawProps.strokeColor));
+        this.instance?.setFillColor(MapsManager.getInstance().colorCovertHex(this.descriptor.rawProps.fillColor));
+        this.instance?.setZIndex(this.descriptor.rawProps.zIndex);
+        this.instance?.setPatterns(MapsManager.getInstance().lineDashPatternConvert(this.descriptor.rawProps.lineDashPattern));
       }
     )
 
