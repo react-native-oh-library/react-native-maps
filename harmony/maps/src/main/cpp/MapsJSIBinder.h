@@ -115,6 +115,12 @@ namespace rnoh {
             object.setProperty(rt, "lineCap", "string");
             return object;
         }
+
+        facebook::jsi::Object createDirectEventTypes(facebook::jsi::Runtime &rt) override {
+            facebook::jsi::Object events(rt);
+            events.setProperty(rt, "topPress", createDirectEvent(rt, "onPress"));
+            return events;
+        }
     };
 
     class AIRMapPolygonJSIBinder : public ViewComponentJSIBinder {
@@ -133,6 +139,12 @@ namespace rnoh {
             object.setProperty(rt, "lineCap", "string");
             return object;
         }
+
+        facebook::jsi::Object createDirectEventTypes(facebook::jsi::Runtime &rt) override {
+            facebook::jsi::Object events(rt);
+            events.setProperty(rt, "topPress", createDirectEvent(rt, "onPress"));
+            return events;
+        }
     };
 
     class AIRMapCircleJSIBinder : public ViewComponentJSIBinder {
@@ -146,6 +158,12 @@ namespace rnoh {
             object.setProperty(rt, "strokeWidth", "int");
             object.setProperty(rt, "lineDashPattern", "array");
             return object;
+        }
+
+        facebook::jsi::Object createDirectEventTypes(facebook::jsi::Runtime &rt) override {
+            facebook::jsi::Object events(rt);
+            events.setProperty(rt, "topPress", createDirectEvent(rt, "onPress"));
+            return events;
         }
     };
 

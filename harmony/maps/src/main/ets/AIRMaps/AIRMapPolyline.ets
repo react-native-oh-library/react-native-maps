@@ -69,7 +69,7 @@ export struct AIRMapPolyline {
   }
 
   setInstance() {
-    MapsManager.getInstance().addPolyline(this.descriptor)?.then(instance => {
+    MapsManager.getInstance().addPolyline(this.descriptor, this.ctx)?.then(instance => {
       this.instance = instance;
     });
   }

@@ -21,7 +21,9 @@
  */
 
 import { map, mapCommon, site } from '@kit.MapKit';
+import { RNComponentContext } from '@rnoh/react-native-openharmony';
 import { AIRMapCallout, AIR_MAP_CALLOUT_TYPE } from './AIRMaps/AIRMapCallout';
+import { AIR_MAP_CIRCLE_TYPE } from './AIRMaps/AIRMapCircle';
 import {  AIRMapMarkerDescriptor,
   AIRMapPolylineDescriptor,
   AIRMapPolygonDescriptor,
@@ -34,6 +36,8 @@ import {  AIRMapMarkerDescriptor,
   AIRMapOverlayDescriptor
 } from './AIRMaps/AIRMapDescriptorTypes';
 import { AIRMapMarker, AIR_MAP_MARKER_TYPE } from './AIRMaps/AIRMapMarker';
+import { AIR_MAP_POLYGON_TYPE } from './AIRMaps/AIRMapPolygon';
+import { AIR_MAP_POLYLINE_TYPE } from './AIRMaps/AIRMapPolyline';
 import { LWError, LWLog } from './LWLog';
 import { MapsTurboManager } from './MapsTurboManager';
 import {
@@ -57,17 +61,22 @@ export class MapsManager{
   
   private mapController?: map.MapComponentController;
   private initMapController = false;
+  private eventNodeMap: Map<string, number> = new Map();
   
   initMapComponentController(controller?: map.MapComponentController){
     LWLog('MapsManager.initMapComponentController----->controller=' + controller)
     if (!controller) {
       //释放controller
       if (this.mapController) {
+        this.eventNodeMap.clear();
         this.mapController?.off('markerClick', ()=>{});
         this.mapController?.off('markerDragStart', ()=>{});
         this.mapController?.off('markerDrag', ()=>{});
         this.mapController?.off('markerDragEnd', ()=>{});
         this.mapController?.off('infoWindowClick', ()=>{});
+        this.mapController?.off('polylineClick', ()=>{});
+        this.mapController?.off('polygonClick', ()=>{});
+        this.mapController?.off('circleClick', ()=>{});
       }
     }
     this.mapController = controller;
@@ -113,27 +122,27 @@ export class MapsManager{
     };
     return this.mapController.addMarker(markerOptions).then(marker => {
       LWLog('MapsManager.addMarker----------marker=' + marker.getId())
-
+      this.eventNodeMap.set(marker.getId(), desc.tag);
       this.mapController?.on("markerClick", (marker)=>{
-        _this.ctx.rnInstance.emitComponentEvent(_this.descriptor.tag, AIR_MAP_MARKER_TYPE, { type: "onPress" });
+        _this.ctx.rnInstance.emitComponentEvent(this.eventNodeMap.get(marker.getId()), AIR_MAP_MARKER_TYPE, { type: "onPress" });
         if (marker.getTitle()) {
           marker.setInfoWindowVisible(!marker.isInfoWindowVisible());
         }
       })
       this.mapController?.on("markerDragStart", (marker)=>{
-        _this.ctx.rnInstance.emitComponentEvent(_this.descriptor.tag, AIR_MAP_MARKER_TYPE, { type: "onDragStart", coordinate: marker.getPosition() });
+        _this.ctx.rnInstance.emitComponentEvent(this.eventNodeMap.get(marker.getId()), AIR_MAP_MARKER_TYPE, { type: "onDragStart", coordinate: marker.getPosition() });
       })
       this.mapController?.on("markerDrag", (marker)=>{
-        _this.ctx.rnInstance.emitComponentEvent(_this.descriptor.tag, AIR_MAP_MARKER_TYPE, { type: "onDrag", coordinate: marker.getPosition() });
+        _this.ctx.rnInstance.emitComponentEvent(this.eventNodeMap.get(marker.getId()), AIR_MAP_MARKER_TYPE, { type: "onDrag", coordinate: marker.getPosition() });
       })
       this.mapController?.on("markerDragEnd", (marker)=>{
-        _this.ctx.rnInstance.emitComponentEvent(_this.descriptor.tag, AIR_MAP_MARKER_TYPE, { type: "onDragEnd", coordinate: marker.getPosition()  });
+        _this.ctx.rnInstance.emitComponentEvent(this.eventNodeMap.get(marker.getId()), AIR_MAP_MARKER_TYPE, { type: "onDragEnd", coordinate: marker.getPosition()  });
       })
       return marker;
     });
   }
 
-  addPolyline(desc: AIRMapPolylineDescriptor){
+  addPolyline(desc: AIRMapPolylineDescriptor, ctx: RNComponentContext){
     LWLog('MapsManager.addPolyline----------rawProps=【' + JSON.stringify(desc.rawProps) + '】')
     if (!this.mapController) {
       LWError('addPolyline error, mapController is undefined!')
@@ -157,12 +166,15 @@ export class MapsManager{
     // 创建polyline
     return this.mapController.addPolyline(polylineOption).then(mapPolyline=>{
       LWLog('MapsManager.addPolyline----------polyline=' + mapPolyline)
+      this.eventNodeMap.set(mapPolyline.getId(), desc.tag);
+      this.mapController?.on("polylineClick", (polyline) => {
+        ctx.rnInstance.emitComponentEvent(this.eventNodeMap.get(polyline.getId()), AIR_MAP_POLYLINE_TYPE, { type: "onPress" });
+      })
       return mapPolyline;
     });
-
   }
 
-  addPolygon(desc: AIRMapPolygonDescriptor){
+  addPolygon(desc: AIRMapPolygonDescriptor, ctx: RNComponentContext){
     LWLog('MapsManager.addPolygon----------rawProps=【' + JSON.stringify(desc.rawProps) + '】')
     if (!this.mapController) {
       LWError('addPolygon error, mapController is undefined!')
@@ -184,12 +196,15 @@ export class MapsManager{
     // 创建多边形
     return this.mapController.addPolygon(polygonOptions).then(mapPolygon=>{
       LWLog('MapsManager.addPolygon----------polygon=' + mapPolygon)
+      this.eventNodeMap.set(mapPolygon.getId(), desc.tag);
+      this.mapController?.on("polygonClick", (polygon) => {
+        ctx.rnInstance.emitComponentEvent(this.eventNodeMap.get(polygon.getId()), AIR_MAP_POLYGON_TYPE, { type: "onPress" });
+      })
       return mapPolygon;
     });
-
   }
 
-  addCircle(desc: AIRMapCircleDescriptor){
+  addCircle(desc: AIRMapCircleDescriptor, ctx: RNComponentContext){
     LWLog('MapsManager.addCircle----------rawProps=【' + JSON.stringify(desc.rawProps) + '】')
     if (!this.mapController) {
       LWError('addCircle error, mapController is undefined!')
@@ -212,6 +227,10 @@ export class MapsManager{
     // 创建Circle
     return this.mapController.addCircle(mapCircleOptions).then(mapCircle=>{
       LWLog('MapsManager.addCircle----------circle=' + JSON.stringify(mapCircle));
+      this.eventNodeMap.set(mapCircle.getId(), desc.tag);
+      this.mapController?.on("circleClick", (circle) => {
+        ctx.rnInstance.emitComponentEvent(this.eventNodeMap.get(circle.getId()), AIR_MAP_CIRCLE_TYPE, { type: "onPress" });
+      })
       return mapCircle;
     });
   }

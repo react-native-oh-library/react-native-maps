@@ -66,7 +66,7 @@ export struct AIRMapPolygon {
   }
 
   setInstance() {
-    MapsManager.getInstance().addPolygon(this.descriptor)?.then(instance => {
+    MapsManager.getInstance().addPolygon(this.descriptor, this.ctx)?.then(instance => {
       this.instance = instance;
     });
   }

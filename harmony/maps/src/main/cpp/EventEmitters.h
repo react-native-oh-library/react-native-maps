@@ -90,16 +90,28 @@ public:
 class JSI_EXPORT AIRMapPolylineEventEmitter : public ViewEventEmitter {
 public:
     using ViewEventEmitter::ViewEventEmitter;
+
+    struct onPressEvent {};
+
+    void onPress(onPressEvent event) const;
 };
 
 class JSI_EXPORT AIRMapPolygonEventEmitter : public ViewEventEmitter {
 public:
     using ViewEventEmitter::ViewEventEmitter;
+
+    struct onPressEvent {};
+
+    void onPress(onPressEvent event) const;
 };
 
 class JSI_EXPORT AIRMapCircleEventEmitter : public ViewEventEmitter {
 public:
     using ViewEventEmitter::ViewEventEmitter;
+
+    struct onPressEvent {};
+
+    void onPress(onPressEvent event) const;
 };
 
 class JSI_EXPORT AIRMapCalloutEventEmitter : public ViewEventEmitter {

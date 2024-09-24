@@ -65,7 +65,7 @@ export struct AIRMapCircle {
   }
 
   setInstance() {
-    MapsManager.getInstance().addCircle(this.descriptor)?.then(instance => {
+    MapsManager.getInstance().addCircle(this.descriptor, this.ctx)?.then(instance => {
       this.instance = instance;
     });
   }

@@ -322,4 +322,113 @@ public:
         }
     };
 };
+
+enum AIRMapPolygonEventType {
+    POLYGON_PRESS = 0,
+};
+
+AIRMapPolygonEventType getAIRMapPolygonEventType(ArkJS &arkJs, napi_value eventObject) {
+    auto eventType = arkJs.getString(arkJs.getObjectProperty(eventObject, "type"));
+    if (eventType == "onPress") {
+        return AIRMapPolygonEventType::POLYGON_PRESS;
+    } else {
+        throw std::runtime_error("Unknown Page event type");
+    }
+}
+
+class AIRMapPolygonEventEmitRequestHandler : public EventEmitRequestHandler {
+public:
+    void handleEvent(EventEmitRequestHandler::Context const &ctx) override {
+        if (ctx.eventName != "AIRMapPolygon") {
+                    return;
+        }
+        ArkJS arkJs(ctx.env);
+        auto eventEmitter = ctx.shadowViewRegistry->getEventEmitter<react::AIRMapPolygonEventEmitter>(ctx.tag);
+        if (eventEmitter == nullptr) {
+                    return;
+        }
+        switch (getAIRMapPolygonEventType(arkJs, ctx.payload)) {
+            case AIRMapPolygonEventType::POLYGON_PRESS: {
+                react::AIRMapPolygonEventEmitter::onPressEvent event{};
+                eventEmitter->onPress(event);
+                }
+                break;
+            default:
+                break;
+        }
+    };
+};
+
+enum AIRMapPolylineEventType {
+    POLYLINE_PRESS = 0,
+};
+
+AIRMapPolylineEventType getAIRMapPolylineEventType(ArkJS &arkJs, napi_value eventObject) {
+    auto eventType = arkJs.getString(arkJs.getObjectProperty(eventObject, "type"));
+    if (eventType == "onPress") {
+        return AIRMapPolylineEventType::POLYLINE_PRESS;
+    } else {
+        throw std::runtime_error("Unknown Page event type");
+    }
+}
+
+class AIRMapPolylineEventEmitRequestHandler : public EventEmitRequestHandler {
+public:
+    void handleEvent(EventEmitRequestHandler::Context const &ctx) override {
+        if (ctx.eventName != "AIRMapPolyline") {
+                    return;
+        }
+        ArkJS arkJs(ctx.env);
+        auto eventEmitter = ctx.shadowViewRegistry->getEventEmitter<react::AIRMapPolylineEventEmitter>(ctx.tag);
+        if (eventEmitter == nullptr) {
+                    return;
+        }
+        switch (getAIRMapPolylineEventType(arkJs, ctx.payload)) {
+            case AIRMapPolylineEventType::POLYLINE_PRESS: {
+                react::AIRMapPolylineEventEmitter::onPressEvent event{};
+                eventEmitter->onPress(event);
+                }
+                break;
+            default:
+                break;
+        }
+    };
+};
+
+enum AIRMapCircleEventType {
+    CIRCLE_PRESS = 0,
+};
+
+AIRMapCircleEventType getAIRMapCircleEventType(ArkJS &arkJs, napi_value eventObject) {
+    auto eventType = arkJs.getString(arkJs.getObjectProperty(eventObject, "type"));
+    if (eventType == "onPress") {
+        return AIRMapCircleEventType::CIRCLE_PRESS;
+    } else {
+        throw std::runtime_error("Unknown Page event type");
+    }
+}
+
+class AIRMapCircleEventEmitRequestHandler : public EventEmitRequestHandler {
+public:
+    void handleEvent(EventEmitRequestHandler::Context const &ctx) override {
+        if (ctx.eventName != "AIRMapCircle") {
+                    return;
+        }
+        ArkJS arkJs(ctx.env);
+        auto eventEmitter = ctx.shadowViewRegistry->getEventEmitter<react::AIRMapCircleEventEmitter>(ctx.tag);
+        if (eventEmitter == nullptr) {
+                    return;
+        }
+        switch (getAIRMapCircleEventType(arkJs, ctx.payload)) {
+            case AIRMapCircleEventType::CIRCLE_PRESS: {
+                react::AIRMapCircleEventEmitter::onPressEvent event{};
+                eventEmitter->onPress(event);
+                }
+                break;
+            default:
+                break;
+        }
+    };
+};
+
 } // namespace rnoh

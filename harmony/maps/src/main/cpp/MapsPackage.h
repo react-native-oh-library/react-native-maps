@@ -3,6 +3,7 @@
 #include "MapsJSIBinder.h"
 #include "MapsEventEmitRequestHandler.h"
 #include "AIRMapManagerTurboModule.h"
+#include "AIRMapMarkerManagerTurboModule.h"
 
 using namespace rnoh;
 using namespace facebook;
@@ -13,7 +14,7 @@ public:
         if (name == "AIRMapManager") {
             return std::make_shared<AIRMapManagerTurboModule>(ctx, name);
         } else if (name == "AIRMapMarkerManager") {
-            return std::make_shared<AIRMapManagerTurboModule>(ctx, name);
+            return std::make_shared<AIRMapMarkerManagerTurboModule>(ctx, name);
         }
         return nullptr;
     };
@@ -71,6 +72,9 @@ namespace rnoh {
         EventEmitRequestHandlers createEventEmitRequestHandlers() override {
             return {std::make_shared<AIRMapEventEmitRequestHandler>(),
                     std::make_shared<AIRMapMarkerEventEmitRequestHandler>(),
+                    std::make_shared<AIRMapPolygonEventEmitRequestHandler>(),
+                    std::make_shared<AIRMapPolylineEventEmitRequestHandler>(),
+                    std::make_shared<AIRMapCircleEventEmitRequestHandler>(),
                     std::make_shared<AIRMapCalloutEventEmitRequestHandler>(),
                     std::make_shared<AIRMapCalloutSubviewEventEmitRequestHandler>()};
         };
