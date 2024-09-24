@@ -35,6 +35,7 @@ export struct AIRMapMarker {
   @BuilderParam buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void
   @State descriptor: AIRMapMarkerDescriptor = {} as AIRMapMarkerDescriptor
   protected cleanUpCallbacks: (() => void)[] = []
+  private marker?: map.Marker;
 
   aboutToAppear() {
     LWLog('AIRMapMarker.aboutToAppear 初始化 AIRMapMarker...')
@@ -46,7 +47,7 @@ export struct AIRMapMarker {
         this.marker?.setPosition({latitude: this.descriptor.rawProps.coordinate.latitude, longitude: this.descriptor.rawProps.coordinate.longitude})
         this.marker?.setRotation(this.descriptor.rawProps.rotation);
         this.marker?.setZIndex(this.descriptor.rawProps.zIndex);
-        this.marker?.setAlpha(this.descriptor.rawProps.opacity?this.descriptor.rawProps.opacity:1.0);
+        this.marker?.setAlpha(this.descriptor.rawProps.opacity ?? 1.0);
         this.marker?.setMarkerAnchor(MapsManager.getInstance().getPointX(this.descriptor.rawProps.anchor, 0.5), MapsManager.getInstance().getPointX(this.descriptor.rawProps.anchor, 1));
         this.marker?.setClickable(this.descriptor.rawProps.tappable===undefined?true:this.descriptor.rawProps.tappable);
         this.marker?.setDraggable(this.descriptor.rawProps.draggable===undefined?true:this.descriptor.rawProps.draggable);
@@ -62,13 +63,9 @@ export struct AIRMapMarker {
       (command, args: [ESObject, ESObject, ESObject]) => {
        LWLog('AIRMapMarker.aboutToAppear----------command=' + command, JSON.stringify(args))
         if (command === 'showCallout') {
-          if (this.marker) {
-            this.marker.setInfoWindowVisible(true);
-          }
+          this.marker?.setInfoWindowVisible(true);
         } else if (command === 'hideCallout') {
-          if (this.marker) {
-            this.marker.setInfoWindowVisible(false);
-          }
+          this.marker?.setInfoWindowVisible(false);
         } else if (command === 'redrawCallout') {
           //todo 华为地图不支持 当infoWindow为自定义view的时候，调用此方法更新infoWindow里的内容
         } else if (command === 'animateMarkerToCoordinate') {
@@ -97,12 +94,6 @@ export struct AIRMapMarker {
     MapsManager.getInstance().addMarker(this, false)?.then(instance => {
       this.marker = instance;
     });
-  }
-
-  private marker?: map.Marker;
-
-  public setMarker(marker: map.Marker){
-    this.marker = marker;
   }
 
   aboutToDisappear() {

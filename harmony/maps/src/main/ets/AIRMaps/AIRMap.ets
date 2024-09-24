@@ -108,9 +108,9 @@ export struct AIRMap {
            LWLog('AIRMap.aboutToAppear----->权限申请通过')
             // 启用我的位置图层
             this.mapController?.setMyLocationEnabled(true);
-            // 启用我的位置按钮
-            this.mapController?.setMyLocationControlsEnabled(true);
-            //首次设置我的位置
+            // 我的位置按钮
+            this.mapController?.setMyLocationControlsEnabled(this.descriptor.rawProps.showsMyLocationButton);
+            // 首次设置我的位置
             geoLocationManager.getCurrentLocation().then((result) => {
             console.log('current location: ' + JSON.stringify(result));
               // 设置用户的位置
@@ -223,6 +223,7 @@ export struct AIRMap {
       minZoom: this.descriptor.rawProps.minZoomLevel,
       rotateGesturesEnabled: this.descriptor.rawProps.rotateEnabled,
       scaleControlsEnabled: this.descriptor.rawProps.showsScale,
+      alwaysShowScaleEnabled: this.descriptor.rawProps.showsScale,
       scrollGesturesEnabled: this.descriptor.rawProps.scrollEnabled,
       tiltGesturesEnabled: true,
       zoomGesturesEnabled: this.descriptor.rawProps.zoomEnabled,

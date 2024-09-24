@@ -261,6 +261,11 @@ const Geojson = (props: GeojsonProps) => {
             strokeColor={lineStrokeColor}
             fillColor={polygonFillColor}
             strokeWidth={lineStrokeWidth}
+            lineCap={lineCap}
+            lineJoin={lineJoin}
+            lineDashPhase={lineDashPhase}
+            lineDashPattern={lineDashPattern}
+            miterLimit={miterLimit}
             tappable={tappable}
             onPress={() => onPress && onPress(overlay)}
             zIndex={zIndex}

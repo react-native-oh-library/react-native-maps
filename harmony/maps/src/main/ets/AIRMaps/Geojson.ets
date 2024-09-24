@@ -46,7 +46,7 @@ export struct Geojson {
 
     if (MapsManager.getInstance().isInitMapController()) {
       MapsManager.getInstance().addGeojson(this.descriptor);
-    }else {
+    } else {
       setTimeout(()=>{
         MapsManager.getInstance().addGeojson(this.descriptor);
       }, 500)

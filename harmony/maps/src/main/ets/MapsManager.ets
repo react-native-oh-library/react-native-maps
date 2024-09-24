@@ -113,7 +113,6 @@ export class MapsManager{
     };
     return this.mapController.addMarker(markerOptions).then(marker => {
       LWLog('MapsManager.addMarker----------marker=' + marker.getId())
-      _this.setMarker(marker);
 
       this.mapController?.on("markerClick", (marker)=>{
         _this.ctx.rnInstance.emitComponentEvent(_this.descriptor.tag, AIR_MAP_MARKER_TYPE, { type: "onPress" });

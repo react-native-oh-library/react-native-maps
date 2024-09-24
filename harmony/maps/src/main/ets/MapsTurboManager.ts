@@ -215,10 +215,8 @@ export class MapsTurboManager{
     return new Promise((resolve, reject) => {
       let params: site.ReverseGeocodeParams = {
         location: {
-          longitude: 10.252502,
-          latitude: 43.8739168
-          // longitude: coordinate.longitude,
-          // latitude: coordinate.latitude
+          longitude: coordinate.longitude,
+          latitude: coordinate.latitude
         },
         language: "zh",
         radius: 10
