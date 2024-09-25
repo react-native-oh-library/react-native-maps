@@ -150,6 +150,10 @@ public:
 class JSI_EXPORT AIRMapOverlayEventEmitter : public ViewEventEmitter {
 public:
     using ViewEventEmitter::ViewEventEmitter;
+
+    struct onPressEvent {};
+
+    void onPress(onPressEvent event) const;
 };
 
 } // namespace react

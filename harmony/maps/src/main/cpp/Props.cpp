@@ -192,9 +192,9 @@ namespace react {
         : ViewProps(context, sourceProps, rawProps),
           image(convertRawProp(context, rawProps, "image", sourceProps.image, {})),
           bounds(convertRawProp(context, rawProps, "bounds", sourceProps.bounds, {})),
-          bearing(convertRawProp(context, rawProps, "bearing", sourceProps.bearing, {})),
-          tappable(convertRawProp(context, rawProps, "tappable", sourceProps.tappable, {})),
-          opacity(convertRawProp(context, rawProps, "opacity", sourceProps.opacity, {})) {}
+          bearing(convertRawProp(context, rawProps, "bearing", sourceProps.bearing, {0})),
+          tappable(convertRawProp(context, rawProps, "tappable", sourceProps.tappable, {false})),
+          opacity(convertRawProp(context, rawProps, "opacity", sourceProps.opacity, {1.0})) {}
 
 } // namespace react
 } // namespace facebook

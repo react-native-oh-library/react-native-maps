@@ -263,7 +263,7 @@ namespace rnoh {
             object.setProperty(rt, "bounds", "array");
             object.setProperty(rt, "bearing", "int");
             object.setProperty(rt, "tappable", "bool");
-            object.setProperty(rt, "opacity", "int");
+            object.setProperty(rt, "opacity", "float");
             return object;
         }
     };

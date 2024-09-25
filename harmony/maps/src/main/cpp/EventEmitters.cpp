@@ -191,6 +191,14 @@ namespace react {
         });
     }
 
+    //------------------------AIRMapOverlay------------------------------
+    void AIRMapOverlayEventEmitter::onPress(onPressEvent event) const {
+        dispatchEvent("press", [event = std::move(event)](jsi::Runtime &runtime) {
+            auto payload = jsi::Object(runtime);
+            return payload;
+        });
+    }
+
     //------------------------AIRMapCallout------------------------------
     void AIRMapCalloutEventEmitter::onPress(onPressEvent event) const {
         dispatchEvent("press", [event = std::move(event)](jsi::Runtime &runtime) {

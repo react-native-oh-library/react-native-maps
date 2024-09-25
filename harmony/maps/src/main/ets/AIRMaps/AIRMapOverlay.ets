@@ -24,6 +24,7 @@ import { ComponentBuilderContext, RNViewBase, Tag, RNComponentContext } from '@r
 import { AIRMapOverlayDescriptor } from './AIRMapDescriptorTypes';
 import { MapsManager } from '../MapsManager';
 import { LWLog } from '../LWLog';
+import { map } from '@kit.MapKit';
 
 export const AIR_OVERLAY_TYPE: string = "AIRMapOverlay"
 
@@ -34,6 +35,7 @@ export struct AIRMapOverlay {
   @BuilderParam buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void
   @State descriptor: AIRMapOverlayDescriptor = {} as AIRMapOverlayDescriptor
   private unregisterDescriptorChangesListener?: () => void = undefined
+  private instance?: map.ImageOverlay;
 
   aboutToAppear() {
     LWLog('AIRMapOverlay.aboutToAppear 初始化 AIRMapOverlay...')
@@ -41,20 +43,41 @@ export struct AIRMapOverlay {
     this.unregisterDescriptorChangesListener = this.ctx.descriptorRegistry.subscribeToDescriptorChanges(this.tag,
       (newDescriptor) => {
         this.descriptor = (newDescriptor as AIRMapOverlayDescriptor)
+        this.instance?.setBounds({
+          northeast: {
+            latitude: this.descriptor.rawProps.bounds[0][0],
+            longitude: this.descriptor.rawProps.bounds[0][1],
+          },
+          southwest: {
+            latitude: this.descriptor.rawProps.bounds[1][0],
+            longitude: this.descriptor.rawProps.bounds[1][1],
+          },
+        });
+        this.instance?.setImage(MapsManager.getInstance().imageSourceConvert(this.descriptor.rawProps.image));
+        this.instance?.setBearing(this.descriptor.rawProps.bearing);
+        this.instance?.setClickable(this.descriptor.rawProps.tappable);
+        this.instance?.setTransparency(1 - this.descriptor.rawProps.opacity);
       }
     )
 
     if (MapsManager.getInstance().isInitMapController()) {
-      MapsManager.getInstance().addOverlay(this.descriptor);
-    }else {
-      setTimeout(()=>{
-        MapsManager.getInstance().addOverlay(this.descriptor);
+      this.setInstance();
+    } else {
+      setTimeout(() => {
+        this.setInstance();
       }, 500)
     }
   }
 
+  setInstance() {
+    MapsManager.getInstance().addOverlay(this.descriptor, this.ctx)?.then(instance => {
+      this.instance = instance;
+    });
+  }
+
   aboutToDisappear() {
-    this.unregisterDescriptorChangesListener?.()
+    this.unregisterDescriptorChangesListener?.();
+    this.instance?.remove();
   }
 
   build() {

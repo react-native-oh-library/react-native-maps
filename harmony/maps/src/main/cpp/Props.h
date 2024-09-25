@@ -251,8 +251,8 @@ namespace react {
         std::string image{};
         folly::dynamic bounds{};
         int bearing{};
-        int tappable{};
-        int opacity{};
+        bool tappable{};
+        float opacity{};
     };
 
 } // namespace react

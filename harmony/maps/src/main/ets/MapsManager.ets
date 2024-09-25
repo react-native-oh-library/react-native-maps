@@ -36,6 +36,7 @@ import {  AIRMapMarkerDescriptor,
   AIRMapOverlayDescriptor
 } from './AIRMaps/AIRMapDescriptorTypes';
 import { AIRMapMarker, AIR_MAP_MARKER_TYPE } from './AIRMaps/AIRMapMarker';
+import { AIR_OVERLAY_TYPE } from './AIRMaps/AIRMapOverlay';
 import { AIR_MAP_POLYGON_TYPE } from './AIRMaps/AIRMapPolygon';
 import { AIR_MAP_POLYLINE_TYPE } from './AIRMaps/AIRMapPolyline';
 import { LWError, LWLog } from './LWLog';
@@ -77,6 +78,7 @@ export class MapsManager{
         this.mapController?.off('polylineClick', ()=>{});
         this.mapController?.off('polygonClick', ()=>{});
         this.mapController?.off('circleClick', ()=>{});
+        this.mapController?.off('imageOverlayClick', ()=>{});
       }
     }
     this.mapController = controller;
@@ -267,8 +269,37 @@ export class MapsManager{
     LWLog('MapsManager.addWMSTile----------rawProps=【' + JSON.stringify(desc.rawProps) + '】')
   }
 
-  addOverlay(desc: AIRMapOverlayDescriptor){
-    LWLog('MapsManager.addOverlay----------rawProps=【' + JSON.stringify(desc.rawProps) + '】')
+  addOverlay(desc: AIRMapOverlayDescriptor, ctx: RNComponentContext){
+    LWLog('MapsManager.addOverlay----------rawProps=【' + JSON.stringify(desc.rawProps) + '】');
+    if (!this.mapController) {
+      LWError('addCircle error, mapController is undefined!')
+      return;
+    }
+    let mapImageOptions: mapCommon.ImageOverlayParams = {
+      bounds: {
+        northeast: {
+          latitude: desc.rawProps.bounds[0][0],
+          longitude: desc.rawProps.bounds[0][1],
+        },
+        southwest: {
+          latitude: desc.rawProps.bounds[1][0],
+          longitude: desc.rawProps.bounds[1][1],
+        },
+      },
+      bearing: desc.rawProps.bearing,
+      clickable: desc.rawProps.tappable,
+      image: this.imageSourceConvert(desc.rawProps.image) as string, // TODO http图片待配置，这里只配了本地图片
+      transparency: 1 - desc.rawProps.opacity,
+    }
+    // 创建Overlay
+    return this.mapController.addImageOverlay(mapImageOptions).then(mapImage => {
+      LWLog('MapsManager.addImageOverlay----------image=' + JSON.stringify(mapImage));
+      this.eventNodeMap.set(mapImage.getId(), desc.tag);
+      this.mapController?.on("imageOverlayClick", (image) => {
+        ctx.rnInstance.emitComponentEvent(this.eventNodeMap.get(image.getId()), AIR_OVERLAY_TYPE, { type: "onPress" });
+      });
+      return mapImage;
+    });
   }
 
   colorCovertHex(color: string, defaultValue?: number){

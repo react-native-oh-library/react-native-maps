@@ -75,6 +75,7 @@ namespace rnoh {
                     std::make_shared<AIRMapPolygonEventEmitRequestHandler>(),
                     std::make_shared<AIRMapPolylineEventEmitRequestHandler>(),
                     std::make_shared<AIRMapCircleEventEmitRequestHandler>(),
+                    std::make_shared<AIRMapOverlayEventEmitRequestHandler>(),
                     std::make_shared<AIRMapCalloutEventEmitRequestHandler>(),
                     std::make_shared<AIRMapCalloutSubviewEventEmitRequestHandler>()};
         };

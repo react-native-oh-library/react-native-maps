@@ -193,7 +193,7 @@ export type AIRMapWMSTileDescriptor = Descriptor<"AIRMapWMSTile", ViewBaseProps,
 export interface AIRMapOverlayState {}
 export interface AIRMapOverlayRawProps extends ViewRawProps {
   image: string;
-  bounds: LatLng[];
+  bounds: [[number, number], [number, number]];
   bearing: number;
   tappable: boolean;
   opacity: number;

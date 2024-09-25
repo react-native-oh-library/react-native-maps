@@ -431,4 +431,40 @@ public:
     };
 };
 
+enum AIRMapOverlayEventType {
+    OVERLAY_PRESS = 0,
+};
+
+AIRMapOverlayEventType getAIRMapOverlayEventType(ArkJS &arkJs, napi_value eventObject) {
+    auto eventType = arkJs.getString(arkJs.getObjectProperty(eventObject, "type"));
+    if (eventType == "onPress") {
+        return AIRMapOverlayEventType::OVERLAY_PRESS;
+    } else {
+        throw std::runtime_error("Unknown Page event type");
+    }
+}
+
+class AIRMapOverlayEventEmitRequestHandler : public EventEmitRequestHandler {
+public:
+    void handleEvent(EventEmitRequestHandler::Context const &ctx) override {
+        if (ctx.eventName != "AIRMapOverlay") {
+                    return;
+        }
+        ArkJS arkJs(ctx.env);
+        auto eventEmitter = ctx.shadowViewRegistry->getEventEmitter<react::AIRMapOverlayEventEmitter>(ctx.tag);
+        if (eventEmitter == nullptr) {
+                    return;
+        }
+        switch (getAIRMapOverlayEventType(arkJs, ctx.payload)) {
+            case AIRMapOverlayEventType::OVERLAY_PRESS: {
+                react::AIRMapOverlayEventEmitter::onPressEvent event{};
+                eventEmitter->onPress(event);
+                }
+                break;
+            default:
+                break;
+        }
+    };
+};
+
 } // namespace rnoh
