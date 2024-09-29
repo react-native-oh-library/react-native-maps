@@ -45,7 +45,7 @@ namespace react {
           showsScale(convertRawProp(context, rawProps, "showsScale", sourceProps.showsScale, {true})),
           showsBuildings(convertRawProp(context, rawProps, "showsBuildings", sourceProps.showsBuildings, {true})),
           showsTraffic(convertRawProp(context, rawProps, "showsTraffic", sourceProps.showsTraffic, {false})),
-          showsIndoors(convertRawProp(context, rawProps, "showsIndoors", sourceProps.showsTraffic, {true})),
+          showsIndoors(convertRawProp(context, rawProps, "showsIndoors", sourceProps.showsIndoors, {true})),
           showsIndoorLevelPicker(convertRawProp(context, rawProps, "showsIndoorLevelPicker", sourceProps.showsIndoorLevelPicker, {false})),
           zoomEnabled(convertRawProp(context, rawProps, "zoomEnabled", sourceProps.zoomEnabled, {true})),
           zoomTapEnabled(convertRawProp(context, rawProps, "zoomTapEnabled", sourceProps.zoomTapEnabled, {true})),

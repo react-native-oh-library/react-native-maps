@@ -24,18 +24,21 @@ import { map, mapCommon, site, staticMap } from '@kit.MapKit';
 import { LWError, LWLog } from './LWLog';
 import {
   Address,
-  Camera, ColorMap, DEFAULT_ZOOM, EdgePadding, ImageURISource, LatLng,
+  Camera,
+  DEFAULT_ZOOM,
+  EdgePadding,
+  LatLng,
   Point,
   Region,
   SnapshotOptions,
-  TAG } from './sharedTypes';
+  TAG
+} from './sharedTypes';
 import { image } from '@kit.ImageKit';
-import { BusinessError } from '@kit.BasicServicesKit';
 import { util } from '@kit.ArkTS';
 import fs from '@ohos.file.fs';
 import { RNOHContext } from '@rnoh/react-native-openharmony/ts';
 
-export class MapsTurboManager{
+export class MapsTurboManager {
 
   private constructor() {
   }
@@ -50,24 +53,26 @@ export class MapsTurboManager{
   }
   
   private mapController: map.MapComponentController = new map.MapComponentController();
+  private calcPx2vp: Function = n => n;
   
-  initMapComponentController(controller: map.MapComponentController){
+  initMapComponentController(controller: map.MapComponentController, calc: Function) {
     console.info(TAG, 'MapsTurboManager.initMapComponentController----->controller=' + controller)
     this.mapController = controller;
+    this.calcPx2vp = calc;
   }
 
-  getMapController(){
+  getMapController() {
     return this.mapController;
   }
 
-  getCameraZoom(zoom?: number){
+  getCameraZoom(zoom?: number) {
     if (zoom) {
       return zoom;
     }
     return DEFAULT_ZOOM;
   }
 
-  public getCamera(){
+  public getCamera() {
     let cameraPosition = this.mapController.getCameraPosition();
     return {
       center: { latitude: cameraPosition.target.latitude, longitude: cameraPosition.target.longitude },
@@ -249,10 +254,32 @@ export class MapsTurboManager{
     //todo 暂无对应api实现
   }
 
-  public takeSnapshot(ctx: RNOHContext, config: SnapshotOptions): Promise<string>{
+  /**
+   * 计算两个点在屏幕上的像素距离
+   * @param from 开始的点
+   * @param to 结束的点
+   * @returns 屏幕上的距离
+   */
+  public calcLength(from: mapCommon.MapPoint, to: mapCommon.MapPoint): number {
+    return Math.sqrt(Math.pow(from.positionX - to.positionX, 2) + Math.pow(from.positionY - to.positionY, 2)) + 1;
+  }
+
+  public takeSnapshot(ctx: RNOHContext, config: SnapshotOptions): Promise<string> {
     return new Promise((resolve, reject) => {
-      let width = config.width;
-      let height = config.height;
+      const projection = this.mapController.getProjection();
+      const target = projection.getVisibleRegion().bounds;
+      const view = {
+        width: this.calcLength(
+          projection.toScreenLocation(target.northeast),
+          projection.toScreenLocation({ longitude: target.southwest.longitude, latitude: target.northeast.latitude })
+        ),
+        height: this.calcLength(
+          projection.toScreenLocation(target.southwest),
+          projection.toScreenLocation({ longitude: target.southwest.longitude, latitude: target.northeast.latitude })
+        ),
+      };
+      let width = config.width || this.calcPx2vp(view.width);
+      let height = config.height || this.calcPx2vp(view.height);
       let quality = config.quality * 100;
       let format = config.format === 'png' ? 'image/png' : 'image/jpg';
       const region = this.mapController.getCameraPosition().target; // 没有值时，取地图当前的中心位置
@@ -262,7 +289,7 @@ export class MapsTurboManager{
           latitude: config.region?.latitude ?? region.latitude,
           longitude: config.region?.longitude ?? region.longitude
         },
-        zoom: DEFAULT_ZOOM,
+        zoom: this.mapController.getCameraPosition().zoom,
         imageWidth: width,
         imageHeight: height,
         scale: 1,

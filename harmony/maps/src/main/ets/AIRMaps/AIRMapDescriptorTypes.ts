@@ -57,6 +57,10 @@ export interface AIRMapRawProps extends ViewRawProps {
   showsScale: boolean,
   showsUserLocation: boolean;
   showsMyLocationButton: boolean,
+  userInterfaceStyle: 'light' | 'dark';
+  showsBuildings: boolean;
+  showsTraffic: boolean;
+  pitchEnabled: boolean;
   provider: string;
   userLocationAnnotationTitle: string;
 }

@@ -43,6 +43,12 @@ export type MapStyleElement = {
   elementType?: string;
   stylers: object[];
 };
+export type HmMapStyleElement = {
+  mapFeature?: string;
+  options?: string;
+  visibility?: string,
+  paint: object;
+};
 export type EdgePadding = {
   top: number;
   right: number;

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import { map, mapCommon, site } from '@kit.MapKit';
+import { map, mapCommon } from '@kit.MapKit';
 import { RNComponentContext } from '@rnoh/react-native-openharmony';
 import { AIRMapCallout, AIR_MAP_CALLOUT_TYPE } from './AIRMaps/AIRMapCallout';
 import { AIR_MAP_CIRCLE_TYPE } from './AIRMaps/AIRMapCircle';
@@ -41,13 +41,9 @@ import { AIR_MAP_POLYGON_TYPE } from './AIRMaps/AIRMapPolygon';
 import { AIR_MAP_POLYLINE_TYPE } from './AIRMaps/AIRMapPolyline';
 import { LWError, LWLog } from './LWLog';
 import { MapsTurboManager } from './MapsTurboManager';
-import {
-  Address,
-  Camera, ColorMap, DEFAULT_ZOOM, EdgePadding, ImageURISource, LatLng,
-  Point,
-  Region, TAG } from './sharedTypes';
+import { ColorMap, Point } from './sharedTypes';
 
-export class MapsManager{
+export class MapsManager {
   private constructor() {
   }
 
@@ -64,25 +60,25 @@ export class MapsManager{
   private initMapController = false;
   private eventNodeMap: Map<string, number> = new Map();
   
-  initMapComponentController(controller?: map.MapComponentController){
+  initMapComponentController(controller?: map.MapComponentController) {
     LWLog('MapsManager.initMapComponentController----->controller=' + controller)
     if (!controller) {
       //释放controller
       if (this.mapController) {
         this.eventNodeMap.clear();
-        this.mapController?.off('markerClick', ()=>{});
-        this.mapController?.off('markerDragStart', ()=>{});
-        this.mapController?.off('markerDrag', ()=>{});
-        this.mapController?.off('markerDragEnd', ()=>{});
-        this.mapController?.off('infoWindowClick', ()=>{});
-        this.mapController?.off('polylineClick', ()=>{});
-        this.mapController?.off('polygonClick', ()=>{});
-        this.mapController?.off('circleClick', ()=>{});
-        this.mapController?.off('imageOverlayClick', ()=>{});
+        this.mapController?.off('markerClick', () => {});
+        this.mapController?.off('markerDragStart', () => {});
+        this.mapController?.off('markerDrag', () => {});
+        this.mapController?.off('markerDragEnd', () => {});
+        this.mapController?.off('infoWindowClick', () => {});
+        this.mapController?.off('polylineClick', () => {});
+        this.mapController?.off('polygonClick', () => {});
+        this.mapController?.off('circleClick', () => {});
+        this.mapController?.off('imageOverlayClick', () => {});
       }
     }
     this.mapController = controller;
-    MapsTurboManager.getInstance().initMapComponentController(this.mapController);
+    MapsTurboManager.getInstance().initMapComponentController(this.mapController, (n: number) => px2vp(n));
     this.initMapController = this.mapController?true:false;
   }
 
@@ -91,7 +87,7 @@ export class MapsManager{
   }
 
   // addMarker(desc: AIRMapMarkerDescriptor, clear: boolean, markerEventCallback: Function){
-  addMarker(_this: AIRMapMarker, clear: boolean){
+  addMarker(_this: AIRMapMarker, clear: boolean) {
     LWLog('MapsManager.addMarker----->rawProps=【' + JSON.stringify(_this.descriptor.rawProps) + '】')
     if (!this.mapController) {
       LWError('addMarker error, mapController is undefined!')
@@ -118,33 +114,33 @@ export class MapsManager{
       title: desc.rawProps.title,
       snippet: desc.rawProps.description,
       infoWindowAnchorU: this.getPointX(desc.rawProps.calloutAnchor, 0.5),
-      infoWindowAnchorV: this.getPointX(desc.rawProps.calloutAnchor, 0),
+      infoWindowAnchorV: this.getPointY(desc.rawProps.calloutAnchor, 0),
       zIndex: desc.rawProps.zIndex,
       visible: true,
     };
     return this.mapController.addMarker(markerOptions).then(marker => {
       LWLog('MapsManager.addMarker----------marker=' + marker.getId())
       this.eventNodeMap.set(marker.getId(), desc.tag);
-      this.mapController?.on("markerClick", (marker)=>{
+      this.mapController?.on("markerClick", (marker) => {
         _this.ctx.rnInstance.emitComponentEvent(this.eventNodeMap.get(marker.getId()), AIR_MAP_MARKER_TYPE, { type: "onPress" });
         if (marker.getTitle()) {
           marker.setInfoWindowVisible(!marker.isInfoWindowVisible());
         }
       })
-      this.mapController?.on("markerDragStart", (marker)=>{
+      this.mapController?.on("markerDragStart", (marker) => {
         _this.ctx.rnInstance.emitComponentEvent(this.eventNodeMap.get(marker.getId()), AIR_MAP_MARKER_TYPE, { type: "onDragStart", coordinate: marker.getPosition() });
       })
-      this.mapController?.on("markerDrag", (marker)=>{
+      this.mapController?.on("markerDrag", (marker) => {
         _this.ctx.rnInstance.emitComponentEvent(this.eventNodeMap.get(marker.getId()), AIR_MAP_MARKER_TYPE, { type: "onDrag", coordinate: marker.getPosition() });
       })
-      this.mapController?.on("markerDragEnd", (marker)=>{
+      this.mapController?.on("markerDragEnd", (marker) => {
         _this.ctx.rnInstance.emitComponentEvent(this.eventNodeMap.get(marker.getId()), AIR_MAP_MARKER_TYPE, { type: "onDragEnd", coordinate: marker.getPosition()  });
       })
       return marker;
     });
   }
 
-  addPolyline(desc: AIRMapPolylineDescriptor, ctx: RNComponentContext){
+  addPolyline(desc: AIRMapPolylineDescriptor, ctx: RNComponentContext) {
     LWLog('MapsManager.addPolyline----------rawProps=【' + JSON.stringify(desc.rawProps) + '】')
     if (!this.mapController) {
       LWError('addPolyline error, mapController is undefined!')
@@ -166,7 +162,7 @@ export class MapsManager{
       zIndex: 0,
     }
     // 创建polyline
-    return this.mapController.addPolyline(polylineOption).then(mapPolyline=>{
+    return this.mapController.addPolyline(polylineOption).then(mapPolyline => {
       LWLog('MapsManager.addPolyline----------polyline=' + mapPolyline)
       this.eventNodeMap.set(mapPolyline.getId(), desc.tag);
       this.mapController?.on("polylineClick", (polyline) => {
@@ -176,7 +172,7 @@ export class MapsManager{
     });
   }
 
-  addPolygon(desc: AIRMapPolygonDescriptor, ctx: RNComponentContext){
+  addPolygon(desc: AIRMapPolygonDescriptor, ctx: RNComponentContext) {
     LWLog('MapsManager.addPolygon----------rawProps=【' + JSON.stringify(desc.rawProps) + '】')
     if (!this.mapController) {
       LWError('addPolygon error, mapController is undefined!')
@@ -196,7 +192,7 @@ export class MapsManager{
       zIndex: desc.rawProps.zIndex,
     }
     // 创建多边形
-    return this.mapController.addPolygon(polygonOptions).then(mapPolygon=>{
+    return this.mapController.addPolygon(polygonOptions).then(mapPolygon => {
       LWLog('MapsManager.addPolygon----------polygon=' + mapPolygon)
       this.eventNodeMap.set(mapPolygon.getId(), desc.tag);
       this.mapController?.on("polygonClick", (polygon) => {
@@ -206,7 +202,7 @@ export class MapsManager{
     });
   }
 
-  addCircle(desc: AIRMapCircleDescriptor, ctx: RNComponentContext){
+  addCircle(desc: AIRMapCircleDescriptor, ctx: RNComponentContext) {
     LWLog('MapsManager.addCircle----------rawProps=【' + JSON.stringify(desc.rawProps) + '】')
     if (!this.mapController) {
       LWError('addCircle error, mapController is undefined!')
@@ -227,7 +223,7 @@ export class MapsManager{
       zIndex: desc.rawProps.zIndex,
     }
     // 创建Circle
-    return this.mapController.addCircle(mapCircleOptions).then(mapCircle=>{
+    return this.mapController.addCircle(mapCircleOptions).then(mapCircle => {
       LWLog('MapsManager.addCircle----------circle=' + JSON.stringify(mapCircle));
       this.eventNodeMap.set(mapCircle.getId(), desc.tag);
       this.mapController?.on("circleClick", (circle) => {
@@ -237,7 +233,7 @@ export class MapsManager{
     });
   }
 
-  addCallout(_this: AIRMapCallout){
+  addCallout(_this: AIRMapCallout) {
     let desc = _this.descriptor;
     LWLog('MapsManager.addCallout----marker不自带callout显示，自定义ui实现？------rawProps=【' + JSON.stringify(desc.rawProps) + '】')
     if (!this.mapController) {
@@ -245,31 +241,31 @@ export class MapsManager{
       return;
     }
     try {
-      this.mapController.on("infoWindowClick", (marker)=>{
-        _this.ctx.rnInstance.emitComponentEvent(_this.descriptor.tag, AIR_MAP_CALLOUT_TYPE, { type: "onPress", coordinate: marker.getPosition()  });
+      this.mapController.on("infoWindowClick", (marker) => {
+        _this.ctx.rnInstance.emitComponentEvent(_this.descriptor.tag, AIR_MAP_CALLOUT_TYPE, { type: "onPress", coordinate: marker.getPosition() });
       })
     } catch (err) {
       LWError(JSON.stringify(err));
     }
   }
 
-  addCalloutSubview(desc: AIRMapCalloutSubviewDescriptor){
+  addCalloutSubview(desc: AIRMapCalloutSubviewDescriptor) {
     LWLog('MapsManager.addCalloutSubview----------rawProps=【' + JSON.stringify(desc.rawProps) + '】')
   }
 
-  addGeojson(desc: GeojsonDescriptor){
+  addGeojson(desc: GeojsonDescriptor) {
     LWLog('MapsManager.addGeojson----------rawProps=【' + JSON.stringify(desc.rawProps) + '】')
   }
 
-  addURLTile(desc: AIRMapUrlTileDescriptor){
+  addURLTile(desc: AIRMapUrlTileDescriptor) {
     LWLog('MapsManager.addURLTile----------rawProps=【' + JSON.stringify(desc.rawProps) + '】')
   }
 
-  addWMSTile(desc: AIRMapWMSTileDescriptor){
+  addWMSTile(desc: AIRMapWMSTileDescriptor) {
     LWLog('MapsManager.addWMSTile----------rawProps=【' + JSON.stringify(desc.rawProps) + '】')
   }
 
-  addOverlay(desc: AIRMapOverlayDescriptor, ctx: RNComponentContext){
+  addOverlay(desc: AIRMapOverlayDescriptor, ctx: RNComponentContext) {
     LWLog('MapsManager.addOverlay----------rawProps=【' + JSON.stringify(desc.rawProps) + '】');
     if (!this.mapController) {
       LWError('addCircle error, mapController is undefined!')
@@ -302,8 +298,8 @@ export class MapsManager{
     });
   }
 
-  colorCovertHex(color: string, defaultValue?: number){
-    let colorResult: number = defaultValue?defaultValue:0XFF000000;
+  colorCovertHex(color: string, defaultValue?: number) {
+    let colorResult: number = defaultValue ?? 0XFF000000;
     if (color) {
       color = color.toLowerCase().trim();
       if (color.startsWith('rgba') || color.startsWith('rgb')) {
@@ -316,7 +312,7 @@ export class MapsManager{
           colorArr.push('1');
         }
         let transHex = '';
-       LWLog('颜色转换值 rgb colorArr=' + colorArr);
+        LWLog('颜色转换值 rgb colorArr=' + colorArr);
         // 转成16进制
         for (let i = 0; i < colorArr.length; i++) {
           if (i === colorArr.length - 1) {
@@ -330,9 +326,9 @@ export class MapsManager{
           }
         }
         strHex = '0x' + transHex + strHex;
-       LWLog('颜色转换值 rgb strHex=' + strHex);
+        LWLog('颜色转换值 rgb strHex=' + strHex);
         colorResult = strHex as number;
-      }else if (color.startsWith('#')){
+      } else if (color.startsWith('#')) {
         if (color.length === 4) {
           color = color.slice(1);
           let fullColor = '#ff';
@@ -345,11 +341,11 @@ export class MapsManager{
           color = '#ff' + color.substring(1);
         }
         colorResult = parseInt(color.slice(1), 16);
-      }else {
+      } else {
         let colorKey = color.toLowerCase();
         if (ColorMap.getInstance().colorMap.has(colorKey)) {
           colorResult = parseInt(ColorMap.getInstance().colorMap.get(colorKey)!!.slice(1), 16);
-        }else {
+        } else {
           LWError('unsupport color');
         }
       }
@@ -358,15 +354,15 @@ export class MapsManager{
     return colorResult;
   }
 
-  lineDashPatternConvert(target: number[]){
+  lineDashPatternConvert(target: number[]) {
     if (target && target.length > 0) {
       let result = new Array<mapCommon.PatternItem>();
       const source = target.length % 2 === 0 ? target : [...target, ...target];
       source.forEach((element, index) => {
         if (index % 2 === 0) {
-          result.push({type: mapCommon.PatternItemType.DASH, length: element});
+          result.push({ type: mapCommon.PatternItemType.DASH, length: element });
         } else {
-          result.push({type: mapCommon.PatternItemType.GAP, length: element});
+          result.push({ type: mapCommon.PatternItemType.GAP, length: element });
         }
       });
       return result;
@@ -374,7 +370,7 @@ export class MapsManager{
     return [];
   }
 
-  imageSourceConvert(target: string){
+  imageSourceConvert(target: string) {
     //asset://examples_maps_assets_flagblue.png 对应到鸿蒙侧规则：所在文件夹名字下划线分割_替换-的图片名
     LWLog('MapsManager.imageSourceConvert.target=' + target);
     if (target && target.startsWith("asset://")) {
@@ -383,7 +379,7 @@ export class MapsManager{
     return undefined;
   }
 
-  lineJoinTypeConvert(target?: string){
+  lineJoinTypeConvert(target?: string) {
     switch (target?.toLowerCase()){
       case 'miter':
         return mapCommon.JointType.DEFAULT;
@@ -396,7 +392,7 @@ export class MapsManager{
     }
   }
 
-  lineCapTypeConvert(target?: string){
+  lineCapTypeConvert(target?: string) {
     switch (target?.toLowerCase()){
       case 'butt':
         return mapCommon.CapStyle.BUTT;
@@ -409,14 +405,14 @@ export class MapsManager{
     }
   }
 
-  public getPointX(target: Point, defaultValue: number){
+  public getPointX(target: Point, defaultValue: number) {
     if (target && target.x) {
       return target.x;
     }
     return defaultValue;
   }
 
-  getPointY(target: Point, defaultValue: number){
+  getPointY(target: Point, defaultValue: number) {
     if (target && target.y) {
       return target.y;
     }

@@ -20,16 +20,20 @@
  * SOFTWARE.
  */
 
-import { RNViewBase, Tag, RNComponentContext, ComponentBuilderContext} from '@rnoh/react-native-openharmony';
-
+import { RNViewBase, Tag, RNComponentContext } from '@rnoh/react-native-openharmony';
 import abilityAccessCtrl, { Permissions } from '@ohos.abilityAccessCtrl';
 import common from '@ohos.app.ability.common';
-import {map, mapCommon, MapComponent} from '@kit.MapKit'
+import { map, mapCommon, MapComponent } from '@kit.MapKit'
 import { AsyncCallback, BusinessError } from '@kit.BasicServicesKit';
 import { bundleManager } from '@kit.AbilityKit';
-
 import { mapsComponentFactoryBuilder } from '../MapsComponentFactory'
-import { Camera, DEFAULT_ZOOM, EdgePadding, LatLng, Region, TAG } from '../sharedTypes';
+import {
+  Camera,
+  DEFAULT_ZOOM,
+  HmMapStyleElement,
+  MapStyleElement,
+  Region
+} from '../sharedTypes';
 import { MapsManager } from '../MapsManager';
 import { AIRMapDescriptor } from './AIRMapDescriptorTypes';
 import { MapsTurboManager } from '../MapsTurboManager';
@@ -46,6 +50,7 @@ export struct AIRMap {
   tag: number = 0
   @BuilderParam public renderChildren: () => void
   @State descriptor: AIRMapDescriptor = {} as AIRMapDescriptor
+  @State loadingEnabled: boolean = false;
   protected cleanUpCallbacks: (() => void)[] = []
   private callback?: AsyncCallback<map.MapComponentController>;
   private mapController?: map.MapComponentController = undefined;
@@ -56,8 +61,35 @@ export struct AIRMap {
     this.descriptor = this.ctx.descriptorRegistry.getDescriptor<AIRMapDescriptor>(this.tag)
     this.cleanUpCallbacks.push(this.ctx.descriptorRegistry.subscribeToDescriptorChanges(this.tag,
       (newDescriptor) => {
-        this.descriptor = (newDescriptor as AIRMapDescriptor)
-        LWLog('AIRMap.subscribeToDescriptorChanges=' + JSON.stringify(newDescriptor))
+        this.descriptor = (newDescriptor as AIRMapDescriptor);
+
+        // 更新属性
+        this.mapController?.setMapType(this.getMapType());
+        this.mapController?.setPadding(this.descriptor.rawProps.mapPadding);
+        this.mapController?.setMinZoom(this.descriptor.rawProps.minZoomLevel);
+        this.mapController?.setMaxZoom(this.descriptor.rawProps.maxZoomLevel);
+        this.mapController?.setZoomGesturesEnabled(this.descriptor.rawProps.zoomEnabled);
+        this.mapController?.setZoomControlsEnabled(this.descriptor.rawProps.zoomControlEnabled);
+        this.mapController?.setRotateGesturesEnabled(this.descriptor.rawProps.rotateEnabled);
+        this.mapController?.setScrollGesturesEnabled(this.descriptor.rawProps.scrollEnabled);
+        this.mapController?.setScaleControlsEnabled(this.descriptor.rawProps.showsScale);
+        this.mapController?.setAlwaysShowScaleEnabled(this.descriptor.rawProps.showsScale);
+        this.mapController?.setTiltGesturesEnabled(this.descriptor.rawProps.pitchEnabled);
+        this.mapController?.setBuildingEnabled(this.descriptor.rawProps.showsBuildings);
+        this.mapController?.setMyLocationEnabled(this.descriptor.rawProps.showsUserLocation);
+        this.mapController?.setMyLocationControlsEnabled(this.descriptor.rawProps.showsMyLocationButton);
+        this.mapController?.setCompassControlsEnabled(this.descriptor.rawProps.showsCompass);
+        this.mapController?.setTrafficEnabled(this.descriptor.rawProps.showsTraffic);
+        this.mapController?.setDayNightMode(this.descriptor.rawProps.userInterfaceStyle === 'dark' ? mapCommon.DayNightMode.NIGHT : mapCommon.DayNightMode.DAY);
+        if (this.descriptor.rawProps.compassOffset) {
+          this.mapController?.setCompassPosition({
+            positionX: this.descriptor.rawProps.compassOffset.x,
+            positionY: this.descriptor.rawProps.compassOffset.y,
+          });
+        }
+        if (this.descriptor.rawProps.customMapStyle) {
+          this.mapController?.setCustomMapStyle({ styleContent: JSON.stringify(this.customMapStyleConversion(this.descriptor.rawProps.customMapStyle)) });
+        }
       }
     ));
 
@@ -90,29 +122,49 @@ export struct AIRMap {
       if (!err) {
         // 获取地图的控制器类，用来操作地图
         this.mapController = _mapController;
-        this.mapController.setMyLocationEnabled(this.descriptor.rawProps.showsUserLocation)
+        this.loadingEnabled = false;
+
+        // 设置初始化结束后，需要设置的属性
+        this.mapController.setTrafficEnabled(this.descriptor.rawProps.showsTraffic); // 路况图层
+        this.mapController.setMyLocationEnabled(this.descriptor.rawProps.showsUserLocation);
+        this.mapController.setBuildingEnabled(this.descriptor.rawProps.showsBuildings);
+        if (this.descriptor.rawProps.compassOffset) {
+          this.mapController.setCompassPosition({
+            positionX: this.descriptor.rawProps.compassOffset.x,
+            positionY: this.descriptor.rawProps.compassOffset.y,
+          });
+        }
+        if (this.descriptor.rawProps.customMapStyle) {
+          this.mapController.setCustomMapStyle({ styleContent: JSON.stringify(this.customMapStyleConversion(this.descriptor.rawProps.customMapStyle)) });
+        }
+
         if (this.mapController.isMyLocationEnabled()) {
           let applyResult = 0;
-          //检查权限
+          // 检查权限
           for (let permission of permissions) {
             let grantStatus: abilityAccessCtrl.GrantStatus = await this.checkAccessToken(permission);
-           LWLog('AIRMap.aboutToAppear----->permission=' + permission + ' status=' + grantStatus);
-            //abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED
+            LWLog('AIRMap.aboutToAppear----->permission=' + permission + ' status=' + grantStatus);
             applyResult += grantStatus;
           }
-          //没有权限去申请权限
+          // 没有权限去申请权限
           if (applyResult !== 0) {
             applyResult = await this.reqPermissionsFromUser(permissions);
           }
           if (applyResult === 0) {
-           LWLog('AIRMap.aboutToAppear----->权限申请通过')
+            LWLog('AIRMap.aboutToAppear----->权限申请通过')
             // 启用我的位置图层
             this.mapController?.setMyLocationEnabled(true);
+            this.mapController?.setMyLocationStyle({
+              displayType: this.descriptor.rawProps.followsUserLocation
+                ? mapCommon.MyLocationDisplayType.FOLLOW
+                : mapCommon.MyLocationDisplayType.DEFAULT
+            });
+
             // 我的位置按钮
             this.mapController?.setMyLocationControlsEnabled(this.descriptor.rawProps.showsMyLocationButton);
+
             // 首次设置我的位置
             geoLocationManager.getCurrentLocation().then((result) => {
-            console.log('current location: ' + JSON.stringify(result));
               // 设置用户的位置
               let position: geoLocationManager.Location = {
                 "latitude": result.latitude,
@@ -137,7 +189,7 @@ export struct AIRMap {
         }
         MapsManager.getInstance().initMapComponentController(this.mapController)
 
-        //mapview
+        // mapview
         this.mapController.on("mapLoad", () => {
           this.ctx.rnInstance.emitComponentEvent(this.descriptor.tag, AIR_MAP_TYPE, { type: "onMapReady" });
         });
@@ -149,7 +201,7 @@ export struct AIRMap {
           LWLog('AIRMap.aboutToAppear.callback.mapLongClick');
           this.ctx.rnInstance.emitComponentEvent(this.descriptor.tag, AIR_MAP_TYPE, { type: "onLongPress", coordinate: latLng });
         });
-        //marker
+        // marker
         this.mapController.on("markerClick", (marker) => {
           LWLog('AIRMap.aboutToAppear.callback.markerClick');
           this.ctx.rnInstance.emitComponentEvent(this.descriptor.tag, AIR_MAP_TYPE, { type: "onMarkerPress", coordinate: marker.getPosition() });
@@ -194,7 +246,7 @@ export struct AIRMap {
           });
         });
         this.mapController.on("cameraMove", () => {
-          //LWLog('AIRMap.aboutToAppear.callback.cameraMove');
+          // LWLog('AIRMap.aboutToAppear.callback.cameraMove');
         });
         this.mapController.on("poiClick", (poi) => {
           LWLog('AIRMap.aboutToAppear.callback.poiClick', JSON.stringify(poi));
@@ -207,6 +259,7 @@ export struct AIRMap {
       }
     };
 
+    this.loadingEnabled = this.descriptor.rawProps.loadingEnabled ?? false;
     this.mapOptions = {
       mapType: this.getMapType(),
       position: {
@@ -225,11 +278,12 @@ export struct AIRMap {
       scaleControlsEnabled: this.descriptor.rawProps.showsScale,
       alwaysShowScaleEnabled: this.descriptor.rawProps.showsScale,
       scrollGesturesEnabled: this.descriptor.rawProps.scrollEnabled,
-      tiltGesturesEnabled: true,
+      tiltGesturesEnabled: this.descriptor.rawProps.pitchEnabled,
       zoomGesturesEnabled: this.descriptor.rawProps.zoomEnabled,
       zoomControlsEnabled: this.descriptor.rawProps.zoomControlEnabled,
       myLocationControlsEnabled: this.descriptor.rawProps.showsMyLocationButton,
       compassControlsEnabled: this.descriptor.rawProps.showsCompass,
+      dayNightMode: this.descriptor.rawProps.userInterfaceStyle === 'dark' ? mapCommon.DayNightMode.NIGHT : mapCommon.DayNightMode.DAY,
       padding: {
         left: this.descriptor.rawProps.mapPadding?.left,
         top: this.descriptor.rawProps.mapPadding?.top,
@@ -240,18 +294,38 @@ export struct AIRMap {
   }
 
   aboutToDisappear() {
-    this.mapController?.off('mapLoad', ()=>{});
-    this.mapController?.off('mapClick', ()=>{});
-    this.mapController?.off('mapLongClick', ()=>{});
-    this.mapController?.off('markerClick', ()=>{});
-    this.mapController?.off('markerDrag', ()=>{});
-    this.mapController?.off('markerDragEnd', ()=>{});
-    this.mapController?.off('markerDragStart', ()=>{});
-    this.mapController?.off('cameraChange', ()=>{});
-    this.mapController?.off('cameraMove', ()=>{});
-    this.mapController?.off('poiClick', ()=>{});
+    this.mapController?.off('mapLoad', () => {});
+    this.mapController?.off('mapClick', () => {});
+    this.mapController?.off('mapLongClick', () => {});
+    this.mapController?.off('markerClick', () => {});
+    this.mapController?.off('markerDrag', () => {});
+    this.mapController?.off('markerDragEnd', () => {});
+    this.mapController?.off('markerDragStart', () => {});
+    this.mapController?.off('cameraChange', () => {});
+    this.mapController?.off('cameraMove', () => {});
+    this.mapController?.off('poiClick', () => {});
     this.cleanUpCallbacks.forEach(cb => cb())
     MapsManager.getInstance().initMapComponentController(undefined);
+  }
+
+  customMapStyleConversion(resource: MapStyleElement[]): HmMapStyleElement[] {
+    const arr2obj = (arr: object[]) => {
+      const obj: object = new Object();
+      arr.forEach(arrItem => {
+        Object.keys(arrItem).forEach(key => {
+          obj[key] = arrItem[key];
+        });
+      });
+      return obj;
+    };
+    return resource.map(item => {
+      return {
+        mapFeature: item.featureType,
+        options: item.elementType,
+        paint: arr2obj(item.stylers),
+        visibility: 'inherit',
+      } as HmMapStyleElement;
+    });
   }
 
   public animateToRegion(region: Region, duration: number) {
@@ -274,13 +348,14 @@ export struct AIRMap {
       case 'terrain':
         return mapCommon.MapType.TERRAIN;
       default:
-      //others not support
         return undefined;
     }
   }
 
   getCameraOption() {
-    let lat: number = 39.9, lng: number = 118.9, zoom: number = DEFAULT_ZOOM;
+    let lat: number = 39.9089236;
+    let lng: number = 116.3991428;
+    let zoom: number = DEFAULT_ZOOM;
     if (this.descriptor.rawProps.camera) {
       lat = this.descriptor.rawProps.camera.center.latitude;
       lng = this.descriptor.rawProps.camera.center.longitude;
@@ -295,8 +370,15 @@ export struct AIRMap {
     } else if (this.descriptor.rawProps.initialRegion) {
       lat = this.descriptor.rawProps.initialRegion.latitude;
       lng = this.descriptor.rawProps.initialRegion.longitude;
+    } else {
     }
-    return { center: {latitude: lat!!, longitude: lng}, zoom: MapsTurboManager.getInstance().getCameraZoom(zoom), pitch: 1,  heading: 1, altitude: 1} as Camera;
+    return {
+      center: { latitude: lat ?? 39.9089236, longitude: lng ?? 116.3991428 },
+      zoom: MapsTurboManager.getInstance().getCameraZoom(zoom),
+      pitch: 0,
+      heading: 0,
+      altitude: 0
+    } as Camera;
   }
 
   async reqPermissionsFromUser(permissions: Array<Permissions>): Promise<number> {
@@ -352,6 +434,12 @@ export struct AIRMap {
             tag,
             this.ctx.rnInstance.getComponentNameFromDescriptorType(this.ctx.descriptorRegistry.getDescriptor(tag)?.type))
         }, (tag: Tag) => tag.toString())
+        if (this.loadingEnabled) {
+          LoadingProgress()
+            .color(this.descriptor.rawProps.loadingIndicatorColor)
+            .backgroundColor(this.descriptor.rawProps.loadingBackgroundColor)
+            .width('100%')
+        }
       }
     }
   }
