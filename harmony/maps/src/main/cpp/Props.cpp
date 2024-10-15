@@ -82,6 +82,7 @@ namespace react {
           calloutAnchor(convertRawProp(context, rawProps, "calloutAnchor", sourceProps.calloutAnchor, {})),
           anchor(convertRawProp(context, rawProps, "anchor", sourceProps.anchor, {})),
           tappable(convertRawProp(context, rawProps, "tappable", sourceProps.tappable, {true})),
+          zIndex(convertRawProp(context, rawProps, "zIndex", sourceProps.zIndex, {0})),
           opacity(convertRawProp(context, rawProps, "opacity", sourceProps.opacity, {})) {}
 
     AIRMapPolylineProps::AIRMapPolylineProps(const PropsParserContext &context, const AIRMapPolylineProps &sourceProps,
@@ -93,6 +94,7 @@ namespace react {
           strokeWidth(convertRawProp(context, rawProps, "strokeWidth", sourceProps.strokeWidth, {1})),
           lineDashPattern(convertRawProp(context, rawProps, "lineDashPattern", sourceProps.lineDashPattern, {})),
           geodesic(convertRawProp(context, rawProps, "geodesic", sourceProps.geodesic, {})),
+          zIndex(convertRawProp(context, rawProps, "zIndex", sourceProps.zIndex, {0})),
           tappable(convertRawProp(context, rawProps, "tappable", sourceProps.tappable, {false})),
           lineJoin(convertRawProp(context, rawProps, "lineJoin", sourceProps.lineJoin, {"round"})),
           lineCap(convertRawProp(context, rawProps, "lineCap", sourceProps.lineCap, {"round"})) {}
@@ -107,7 +109,7 @@ namespace react {
           geodesic(convertRawProp(context, rawProps, "geodesic", sourceProps.geodesic, {})),
           lineDashPattern(convertRawProp(context, rawProps, "lineDashPattern", sourceProps.lineDashPattern, {})),
           holes(convertRawProp(context, rawProps, "holes", sourceProps.holes, {})),
-          zIndexa(convertRawProp(context, rawProps, "zIndexa", sourceProps.zIndexa, {0})),
+          zIndex(convertRawProp(context, rawProps, "zIndex", sourceProps.zIndex, {0})),
           tappable(convertRawProp(context, rawProps, "tappable", sourceProps.tappable, {false})),
           lineJoin(convertRawProp(context, rawProps, "lineJoin", sourceProps.lineJoin, {"round"})),
           lineCap(convertRawProp(context, rawProps, "lineCap", sourceProps.lineCap, {"round"})) {}
@@ -119,7 +121,7 @@ namespace react {
           radius(convertRawProp(context, rawProps, "radius", sourceProps.radius, {})),
           fillColor(convertRawProp(context, rawProps, "fillColor", sourceProps.fillColor, {SharedColor(0xFF000000)})),
           strokeColor(convertRawProp(context, rawProps, "strokeColor", sourceProps.strokeColor, {SharedColor(0xFF000000)})),
-          zIndexa(convertRawProp(context, rawProps, "zIndexa", sourceProps.zIndexa, {})),
+          zIndex(convertRawProp(context, rawProps, "zIndex", sourceProps.zIndex, {})),
           strokeWidth(convertRawProp(context, rawProps, "strokeWidth", sourceProps.strokeWidth, {1})),
           lineDashPattern(convertRawProp(context, rawProps, "lineDashPattern", sourceProps.lineDashPattern, {})) {}
 
@@ -146,7 +148,7 @@ namespace react {
           lineCap(convertRawProp(context, rawProps, "lineCap", sourceProps.lineCap, {})),
           lineJoin(convertRawProp(context, rawProps, "lineJoin", sourceProps.lineJoin, {})),
           miterLimit(convertRawProp(context, rawProps, "miterLimit", sourceProps.miterLimit, {})),
-          zIndexa(convertRawProp(context, rawProps, "zIndexa", sourceProps.zIndexa, {})),
+          zIndex(convertRawProp(context, rawProps, "zIndex", sourceProps.zIndex, {})),
           markerComponent(convertRawProp(context, rawProps, "markerComponent", sourceProps.markerComponent, {})),
           title(convertRawProp(context, rawProps, "title", sourceProps.title, {})),
           tracksViewChanges(convertRawProp(context, rawProps, "tracksViewChanges", sourceProps.tracksViewChanges, {false})) {}
@@ -158,7 +160,7 @@ namespace react {
           minimumZ(convertRawProp(context, rawProps, "minimumZ", sourceProps.minimumZ, {})),
           maximumZ(convertRawProp(context, rawProps, "maximumZ", sourceProps.maximumZ, {})),
           maximumNativeZ(convertRawProp(context, rawProps, "maximumNativeZ", sourceProps.maximumNativeZ, {})),
-          zIndexa(convertRawProp(context, rawProps, "zIndexa", sourceProps.zIndexa, {})),
+          zIndex(convertRawProp(context, rawProps, "zIndex", sourceProps.zIndex, {})),
           tileSize(convertRawProp(context, rawProps, "tileSize", sourceProps.tileSize, {})),
           doubleTileSize(convertRawProp(context, rawProps, "doubleTileSize", sourceProps.doubleTileSize, {})),
           shouldReplaceMapContent(
@@ -176,7 +178,7 @@ namespace react {
           minimumZ(convertRawProp(context, rawProps, "minimumZ", sourceProps.minimumZ, {})),
           maximumZ(convertRawProp(context, rawProps, "maximumZ", sourceProps.maximumZ, {})),
           maximumNativeZ(convertRawProp(context, rawProps, "maximumNativeZ", sourceProps.maximumNativeZ, {})),
-          zIndexa(convertRawProp(context, rawProps, "zIndexa", sourceProps.zIndexa, {})),
+          zIndex(convertRawProp(context, rawProps, "zIndex", sourceProps.zIndex, {})),
           tileSize(convertRawProp(context, rawProps, "tileSize", sourceProps.tileSize, {})),
           doubleTileSize(convertRawProp(context, rawProps, "doubleTileSize", sourceProps.doubleTileSize, {})),
           shouldReplaceMapContent(

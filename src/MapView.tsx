@@ -1165,8 +1165,7 @@ class MapView extends React.Component<MapViewProps, State> {
         ...this.props,
       };
       if (
-        // @ts-ignore
-        Platform.OS === 'ios' || Platform.OS === 'harmony' &&
+        Platform.OS === 'ios' &&
         props.provider === ProviderConstants.PROVIDER_DEFAULT &&
         props.mapType &&
         GOOGLE_MAPS_ONLY_TYPES.includes(props.mapType)

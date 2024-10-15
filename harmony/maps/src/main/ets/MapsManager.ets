@@ -159,7 +159,7 @@ export class MapsManager {
       width: desc.rawProps.strokeWidth,
       gradient: false,
       visible: true,
-      zIndex: 0,
+      zIndex: desc.rawProps.zIndex,
     }
     // 创建polyline
     return this.mapController.addPolyline(polylineOption).then(mapPolyline => {

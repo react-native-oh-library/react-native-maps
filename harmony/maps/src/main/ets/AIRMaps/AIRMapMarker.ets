@@ -20,13 +20,13 @@
  * SOFTWARE.
  */
 
+import { map } from '@kit.MapKit';
 import { RNViewBase, ComponentBuilderContext, Tag, RNComponentContext } from '@rnoh/react-native-openharmony';
 import { MapsManager } from '../MapsManager';
-import { mapCommon, map } from '@kit.MapKit';
 import { AIRMapMarkerDescriptor } from './AIRMapDescriptorTypes';
 import { LWLog } from '../LWLog';
 
-export const AIR_MAP_MARKER_TYPE: string = "AIRMapMarker"
+export const AIR_MAP_MARKER_TYPE: string = 'AIRMapMarker';
 
 @Component
 export struct AIRMapMarker {
@@ -46,16 +46,16 @@ export struct AIRMapMarker {
         LWLog('AIRMapMarker.subscribeToDescriptorChanges=' + JSON.stringify(newDescriptor));
         this.marker?.setPosition({latitude: this.descriptor.rawProps.coordinate.latitude, longitude: this.descriptor.rawProps.coordinate.longitude})
         this.marker?.setRotation(this.descriptor.rawProps.rotation);
-        this.marker?.setZIndex(this.descriptor.rawProps.zIndex);
         this.marker?.setAlpha(this.descriptor.rawProps.opacity ?? 1.0);
-        this.marker?.setMarkerAnchor(MapsManager.getInstance().getPointX(this.descriptor.rawProps.anchor, 0.5), MapsManager.getInstance().getPointX(this.descriptor.rawProps.anchor, 1));
+        this.marker?.setMarkerAnchor(MapsManager.getInstance().getPointX(this.descriptor.rawProps.anchor, 0.5), MapsManager.getInstance().getPointY(this.descriptor.rawProps.anchor, 1));
         this.marker?.setClickable(this.descriptor.rawProps.tappable===undefined?true:this.descriptor.rawProps.tappable);
         this.marker?.setDraggable(this.descriptor.rawProps.draggable===undefined?true:this.descriptor.rawProps.draggable);
         this.marker?.setIcon(MapsManager.getInstance().imageSourceConvert(this.descriptor.rawProps.image));
         this.marker?.setTitle(this.descriptor.rawProps.title);
         this.marker?.setSnippet(this.descriptor.rawProps.description);
         this.marker?.setFlat(this.descriptor.rawProps.flat);
-        this.marker?.setInfoWindowAnchor(MapsManager.getInstance().getPointX(this.descriptor.rawProps.calloutAnchor, 0.5), MapsManager.getInstance().getPointX(this.descriptor.rawProps.calloutAnchor, 0));
+        this.marker?.setInfoWindowAnchor(MapsManager.getInstance().getPointX(this.descriptor.rawProps.calloutAnchor, 0.5), MapsManager.getInstance().getPointY(this.descriptor.rawProps.calloutAnchor, 0));
+        this.marker?.setZIndex(this.descriptor.rawProps.zIndex);
       }
     ));
     this.cleanUpCallbacks.push(this.ctx.componentCommandReceiver.registerCommandCallback(

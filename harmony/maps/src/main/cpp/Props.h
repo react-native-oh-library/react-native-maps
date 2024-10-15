@@ -97,6 +97,7 @@ namespace react {
         std::string image{};
         folly::dynamic calloutAnchor{};
         folly::dynamic anchor{};
+        int zIndex{};
         bool tappable{};
         float opacity{};
     };
@@ -113,6 +114,7 @@ namespace react {
         folly::dynamic strokeColors{};
         int strokeWidth{};
         folly::dynamic lineDashPattern{};
+        int zIndex{};
         bool geodesic{};
         bool tappable{};
         std::string lineJoin{};
@@ -133,7 +135,7 @@ namespace react {
         bool geodesic{};
         folly::dynamic lineDashPattern{};
         folly::dynamic holes{};
-        int zIndexa{};
+        int zIndex{};
         bool tappable{};
         std::string lineJoin{};
         std::string lineCap{};
@@ -150,7 +152,7 @@ namespace react {
         int radius{};
         std::string fillColor{};
         std::string strokeColor{};
-        int zIndexa{};
+        int zIndex{};
         int strokeWidth{};
         folly::dynamic lineDashPattern{};
     };
@@ -191,7 +193,7 @@ namespace react {
         std::string lineCap{};
         std::string lineJoin{};
         int miterLimit{};
-        int zIndexa{};
+        int zIndex{};
         folly::dynamic markerComponent{};
         std::string title{};
         bool tracksViewChanges{};
@@ -208,7 +210,7 @@ namespace react {
         int minimumZ{};
         int maximumZ{};
         int maximumNativeZ{};
-        int zIndexa{};
+        int zIndex{};
         int tileSize{};
         bool doubleTileSize{};
         bool shouldReplaceMapContent{};
@@ -230,7 +232,7 @@ namespace react {
         int minimumZ{};
         int maximumZ{};
         int maximumNativeZ{};
-        int zIndexa{};
+        int zIndex{};
         int tileSize{};
         bool doubleTileSize{};
         bool shouldReplaceMapContent{};

@@ -86,6 +86,7 @@ namespace rnoh {
             object.setProperty(rt, "image", "string");
             object.setProperty(rt, "calloutAnchor", "Point");
             object.setProperty(rt, "anchor", "Point");
+            object.setProperty(rt, "zIndex", "int");
             object.setProperty(rt, "tappable", "bool");
             object.setProperty(rt, "opacity", "float");
             return object;
@@ -110,6 +111,7 @@ namespace rnoh {
             object.setProperty(rt, "strokeWidth", "int");
             object.setProperty(rt, "lineDashPattern", "array");
             object.setProperty(rt, "geodesic", "bool");
+            object.setProperty(rt, "zIndex", "int");
             object.setProperty(rt, "tappable", "bool");
             object.setProperty(rt, "lineJoin", "string");
             object.setProperty(rt, "lineCap", "string");
