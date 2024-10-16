@@ -1,12 +1,12 @@
 {
   "name": "@react-native-oh-tpl/react-native-maps",
-  "version": "1.10.3-0.0.6",
+  "version": "1.10.3-0.0.7",
   "description": "Map for React Native",
   "main": "Index.ets",
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "@rnoh/react-native-openharmony": "file:../libs/react_native_openharmony-5.0.0.600.har"
+    "@rnoh/react-native-openharmony": "file:../../../libs/react_native_openharmony-5.0.0.600.har"
   },
   "modelVersion": "5.0.0"
 }
