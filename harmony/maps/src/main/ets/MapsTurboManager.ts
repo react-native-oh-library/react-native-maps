@@ -73,60 +73,47 @@ export class MapsTurboManager {
   }
 
   public getCamera() {
-    let cameraPosition = this.mapController.getCameraPosition();
+    const cameraPosition = this.mapController.getCameraPosition();
     return {
       center: { latitude: cameraPosition.target.latitude, longitude: cameraPosition.target.longitude },
       zoom: cameraPosition.zoom,
-      tilt: cameraPosition.tilt,
-      bearing: cameraPosition.bearing,
-      //rn地图中 heading 就是 bearing，RN侧获取camera时，反向填充进去返回
       heading: cameraPosition.bearing,
-      //华为地图没提供这两个参数
-      altitude: 0,
-      pitch: 0,
+      altitude: 0, //华为地图没提供这个参数
+      pitch: cameraPosition.tilt,
     } as Camera;
   }
 
   public setCamera(camera: ESObject) {
-    let cameraData = this.mapController?.getCameraPosition();
+    const cameraData = this.mapController?.getCameraPosition();
     let lat = cameraData?.target.latitude;
-    if (camera.center && camera.center.latitude && camera.center.latitude !== 0) {
-      lat = camera.center.latitude;
-    }
     let lng = cameraData?.target.longitude;
-    if (camera.center && camera.center.longitude && camera.center.longitude !== 0) {
+    if (camera.center) {
+      lat = camera.center.latitude;
       lng = camera.center.longitude;
     }
-    let _zoom = cameraData?.zoom;
-    if (camera.zoom && camera.zoom !== 0) {
-      _zoom = camera.zoom;
-    }
-    let _bearing = cameraData?.bearing;
-    if (camera.heading) {
-      _bearing = camera.heading;
-    }
-    let mapCamera = {
+    const _zoom = camera.zoom || cameraData?.zoom; // 这里是大于0，不要用 ??
+    const _tilt = camera.pitch ?? cameraData?.tilt;
+    const _bearing = camera.heading ?? cameraData?.bearing;
+    const mapCamera = {
       target: { latitude: lat, longitude: lng },
       zoom: _zoom,
-      tilt: 0,
+      tilt: _tilt,
       bearing: _bearing,
     } as mapCommon.CameraPosition;
-    let cameraUpdate = map.newCameraPosition(mapCamera);
+    const cameraUpdate = map.newCameraPosition(mapCamera);
     this.mapController?.moveCamera(cameraUpdate)
   }
 
   public animateCamera(camera: Camera, duration: number) {
-    if (!camera.zoom) {
-      camera.zoom = DEFAULT_ZOOM;
-    }
+    const cameraData = this.mapController?.getCameraPosition();
     let cameraPosition: mapCommon.CameraPosition = {
       target: {
         latitude: camera.center.latitude,
         longitude: camera.center.longitude
       },
-      zoom: this.getCameraZoom(camera.zoom),
-      tilt: 0,
-      bearing: camera.heading
+      zoom: this.getCameraZoom(camera.zoom || cameraData.zoom),
+      tilt: camera.pitch ?? cameraData.tilt,
+      bearing: camera.heading ?? cameraData.bearing,
     };
     let cameraUpdate = map.newCameraPosition(cameraPosition);
     // 以动画方式移动地图相机
@@ -137,11 +124,12 @@ export class MapsTurboManager {
   }
 
   public animateToRegion(region: Region, duration: number) {
+    const cameraData = this.mapController?.getCameraPosition();
     let mapCamera = {
       target: { latitude: region.latitude, longitude: region.longitude },
-      zoom: this.getCameraZoom(undefined),
-      tilt: 0,
-      bearing: 0,
+      zoom: cameraData.zoom ?? this.getCameraZoom(undefined),
+      tilt: cameraData.tilt,
+      bearing: cameraData.bearing,
     } as mapCommon.CameraPosition;
     let cameraUpdate = map.newCameraPosition(mapCamera);
     this.mapController?.animateCamera(cameraUpdate, duration);
@@ -156,30 +144,34 @@ export class MapsTurboManager {
   }
 
   public fitToCoordinates(coordinates: LatLng[], edgePadding: EdgePadding, animated: boolean) {
-    if (coordinates && coordinates.length > 1) {
-      let bounds: mapCommon.LatLngBounds;
-      if (coordinates.length == 1) {
-        bounds = {
-          northeast: coordinates[0],
-          southwest: coordinates[1]
-        };
-      }else {
-        bounds = {
-          northeast: coordinates[0],
-          southwest: coordinates[coordinates.length-1]
-        };
-      }
+    if (coordinates && coordinates.length) {
+      const latitudes = [];
+      const longitudes = [];
+      coordinates.forEach((item) => {
+        latitudes.push(item.latitude);
+        longitudes.push(item.longitude);
+      })
+      const bounds: mapCommon.LatLngBounds = {
+        northeast: {
+          longitude: Math.max(...longitudes),
+          latitude: Math.max(...latitudes),
+        },
+        southwest: {
+          longitude: Math.min(...longitudes),
+          latitude: Math.min(...latitudes),
+        },
+      };
       let cameraUpdate = map.newLatLngBounds(bounds, edgePadding.top);
       if (animated) {
         this.mapController?.animateCamera(cameraUpdate);
-      }else {
+      } else {
         this.mapController?.moveCamera(cameraUpdate);
       }
     }
   }
 
   public setMapBoundaries(northEast: LatLng, southWest: LatLng) {
-    this.mapController?.setLatLngBounds({northeast: northEast, southwest: southWest})
+    this.mapController?.setLatLngBounds({ northeast: northEast, southwest: southWest })
   }
 
   getMapBoundaries() {
@@ -221,7 +213,7 @@ export class MapsTurboManager {
       let params: site.ReverseGeocodeParams = {
         location: {
           longitude: coordinate.longitude,
-          latitude: coordinate.latitude
+          latitude: coordinate.latitude,
         },
         language: "zh",
         radius: 10
@@ -230,22 +222,22 @@ export class MapsTurboManager {
         site.reverseGeocode(params).then((reverseGeocodeResult)=>{
           LWLog("MapsTurboManager.getAddressFromCoordinates success=" + JSON.stringify(reverseGeocodeResult));
           let address = {
-            name: '',
-            thoroughfare: '',
-            subThoroughfare: '',
-            locality: '',
-            subLocality: '',
-            administrativeArea: '',
-            subAdministrativeArea: '',
-            postalCode: '',
+            name: reverseGeocodeResult.addressDescription,
+            thoroughfare: reverseGeocodeResult.addressComponent.adminLevel1,
+            subThoroughfare: reverseGeocodeResult.addressComponent.adminLevel2,
+            locality: reverseGeocodeResult.addressComponent.locality,
+            subLocality: reverseGeocodeResult.addressComponent.subLocality1,
+            administrativeArea: reverseGeocodeResult.addressComponent.adminLevel3,
+            subAdministrativeArea: reverseGeocodeResult.addressComponent.adminLevel4,
+            postalCode: reverseGeocodeResult.addressComponent.adminCode,
             countryCode: reverseGeocodeResult.addressComponent.countryCode,
             country: reverseGeocodeResult.addressComponent.countryName,
-          }  as Address
-          resolve(address)
+          }  as Address;
+          resolve(address);
         });
       } catch (err) {
         console.error(TAG, "MapsTurboManager.getAddressFromCoordinates err=" + JSON.stringify(err));
-        reject(err)
+        reject(err);
       }
     });
   }

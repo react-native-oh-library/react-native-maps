@@ -260,16 +260,17 @@ export struct AIRMap {
     };
 
     this.loadingEnabled = this.descriptor.rawProps.loadingEnabled ?? false;
+    const camera = this.getCameraOption();
     this.mapOptions = {
       mapType: this.getMapType(),
       position: {
         target: {
-          latitude: this.getCameraOption().center.latitude,
-          longitude: this.getCameraOption().center.longitude
+          latitude: camera.center.latitude,
+          longitude: camera.center.longitude
         },
-        zoom: MapsTurboManager.getInstance().getCameraZoom(this.getCameraOption().zoom),
-        tilt: 0,
-        bearing: this.getCameraOption().heading
+        zoom: MapsTurboManager.getInstance().getCameraZoom(camera.zoom),
+        tilt: camera.pitch,
+        bearing: camera.heading
       },
       bounds: undefined,
       maxZoom: this.descriptor.rawProps.maxZoomLevel,
@@ -356,14 +357,23 @@ export struct AIRMap {
     let lat: number = 39.9089236;
     let lng: number = 116.3991428;
     let zoom: number = DEFAULT_ZOOM;
+    let pitch: number = 0;
+    let heading: number = 0;
+    let altitude: number = 0;
     if (this.descriptor.rawProps.camera) {
       lat = this.descriptor.rawProps.camera.center.latitude;
       lng = this.descriptor.rawProps.camera.center.longitude;
       zoom = this.descriptor.rawProps.camera.zoom;
+      pitch = this.descriptor.rawProps.camera.pitch ?? 0;
+      heading = this.descriptor.rawProps.camera.heading ?? 0;
+      altitude = this.descriptor.rawProps.camera.altitude ?? 0;
     } else if (this.descriptor.rawProps.initialCamera) {
       lat = this.descriptor.rawProps.initialCamera.center.latitude;
       lng = this.descriptor.rawProps.initialCamera.center.longitude;
       zoom = this.descriptor.rawProps.initialCamera.zoom;
+      pitch = this.descriptor.rawProps.initialCamera.pitch ?? 0;
+      heading = this.descriptor.rawProps.initialCamera.heading ?? 0;
+      altitude = this.descriptor.rawProps.initialCamera.altitude ?? 0;
     } else if (this.descriptor.rawProps.region) {
       lat = this.descriptor.rawProps.region.latitude;
       lng = this.descriptor.rawProps.region.longitude;
@@ -375,9 +385,9 @@ export struct AIRMap {
     return {
       center: { latitude: lat ?? 39.9089236, longitude: lng ?? 116.3991428 },
       zoom: MapsTurboManager.getInstance().getCameraZoom(zoom),
-      pitch: 0,
-      heading: 0,
-      altitude: 0
+      pitch,
+      heading,
+      altitude,
     } as Camera;
   }
 
