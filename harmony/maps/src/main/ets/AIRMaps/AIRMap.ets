@@ -162,29 +162,6 @@ export struct AIRMap {
 
             // 我的位置按钮
             this.mapController?.setMyLocationControlsEnabled(this.descriptor.rawProps.showsMyLocationButton);
-
-            // 首次设置我的位置
-            geoLocationManager.getCurrentLocation().then((result) => {
-              // 设置用户的位置
-              let position: geoLocationManager.Location = {
-                "latitude": result.latitude,
-                "longitude": result.longitude,
-                "altitude": 0,
-                "accuracy": 0,
-                "speed": 0,
-                "timeStamp": 0,
-                "direction": 0,
-                "timeSinceBoot": 0,
-                //fixme 6.14 liwang新增
-                "altitudeAccuracy": 0,
-                "speedAccuracy": 0,
-                "directionAccuracy": 0,
-                "uncertaintyOfTimeSinceBoot": 0,
-                "sourceType": geoLocationManager.LocationSourceType.GNSS
-              };
-              this.mapController?.setMyLocation(position);
-              this.animateToRegion({latitude: result.latitude, longitude: result.longitude}, 500);
-            });
           }
         }
         MapsManager.getInstance().initMapComponentController(this.mapController)
