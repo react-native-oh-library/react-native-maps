@@ -156,5 +156,16 @@ public:
     void onPress(onPressEvent event) const;
 };
 
+class JSI_EXPORT AIRMapClusterEventEmitter : public ViewEventEmitter {
+public:
+    using ViewEventEmitter::ViewEventEmitter;
+
+    struct onPressEvent {
+        std::string points;
+    };
+
+    void onPress(onPressEvent event) const;
+};
+
 } // namespace react
 } // namespace facebook

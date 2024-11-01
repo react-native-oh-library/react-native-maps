@@ -35,5 +35,7 @@ namespace react {
 
     extern const char AIRMapOverlayComponentName[] = "AIRMapOverlay";
 
+    extern const char AIRMapClusterComponentName[] = "AIRMapCluster";
+
     } // namespace react
 } // namespace facebook

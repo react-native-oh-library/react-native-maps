@@ -19,45 +19,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-import { ComponentBuilderContext, RNViewBase, Tag, RNComponentContext } from '@rnoh/react-native-openharmony';
-import { GeojsonDescriptor } from './AIRMapDescriptorTypes';
+import { map } from '@kit.MapKit';
+import { RNComponentContext, ComponentBuilderContext } from '@rnoh/react-native-openharmony';
 import { MapsManager } from '../MapsManager';
-import { LWLog } from '../LWLog';
+import { AIRMapClusterDescriptor } from './AIRMapDescriptorTypes';
 
-export const AIR_GEOJSON_TYPE: string = "Geojson"
+export const AIR_MAP_CLUSTER_TYPE: string = 'AIRMapCluster';
 
 @Component
-export struct Geojson {
-  ctx!: RNComponentContext
-  tag: number = 0
-  @BuilderParam buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void
-  @State descriptor: GeojsonDescriptor = {} as GeojsonDescriptor
-  private unregisterDescriptorChangesListener?: () => void = undefined
+export struct AIRMapCluster {
+  ctx!: RNComponentContext;
+  tag: number = 0;
+  @BuilderParam buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void;
+  @State descriptor: AIRMapClusterDescriptor = {} as AIRMapClusterDescriptor;
+  private unregisterDescriptorChangesListener?: () => void = undefined;
+  private instance?: map.ClusterOverlay;
 
   aboutToAppear() {
-    LWLog('Geojson.aboutToAppear 初始化 Geojson...')
-    this.descriptor = this.ctx.descriptorRegistry.getDescriptor<GeojsonDescriptor>(this.tag)
+    this.descriptor = this.ctx.descriptorRegistry.getDescriptor<AIRMapClusterDescriptor>(this.tag);
     this.unregisterDescriptorChangesListener = this.ctx.descriptorRegistry.subscribeToDescriptorChanges(this.tag,
       (newDescriptor) => {
-        this.descriptor = (newDescriptor as GeojsonDescriptor)
+        this.descriptor = (newDescriptor as AIRMapClusterDescriptor);
       }
-    )
+    );
 
-    MapsManager.getInstance().addGeojson(this.descriptor);
+    MapsManager.getInstance().addCluster(this.descriptor, this.ctx)?.then(instance => {
+      this.instance = instance;
+    });
   }
 
   aboutToDisappear() {
-    this.unregisterDescriptorChangesListener?.()
+    this.unregisterDescriptorChangesListener?.();
+    this.instance?.off('click');
+    this.instance?.remove();
   }
 
   build() {
-    RNViewBase({ ctx: this.ctx, tag: this.tag }) {
-      Stack(){
-        ForEach(this.descriptor.childrenTags, (tag: Tag) => {
-
-        }, (tag: Tag) => tag.toString())
-      }
-    }
   }
 }

@@ -40,6 +40,8 @@ JSI_EXPORT extern const char AIRMapWMSTileComponentName[];
 
 JSI_EXPORT extern const char AIRMapOverlayComponentName[];
 
+JSI_EXPORT extern const char AIRMapClusterComponentName[];
+
 /*
  * `ShadowNode` for <AIRMap> component.
  */
@@ -64,6 +66,8 @@ using AIRMapUrlTileShadowNode = ConcreteViewShadowNode<AIRMapUrlTileComponentNam
 using AIRMapWMSTileShadowNode = ConcreteViewShadowNode<AIRMapWMSTileComponentName, ViewProps, AIRMapWMSTileEventEmitter>;
 
 using AIRMapOverlayShadowNode = ConcreteViewShadowNode<AIRMapOverlayComponentName, ViewProps, AIRMapOverlayEventEmitter>;
+
+using AIRMapClusterShadowNode = ConcreteViewShadowNode<AIRMapClusterComponentName, ViewProps, AIRMapClusterEventEmitter>;
 
 } // namespace react
 } // namespace facebook

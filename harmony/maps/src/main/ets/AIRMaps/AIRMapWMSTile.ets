@@ -44,13 +44,7 @@ export struct AIRMapWMSTile {
       }
     )
 
-    if (MapsManager.getInstance().isInitMapController()) {
-      MapsManager.getInstance().addWMSTile(this.descriptor);
-    }else {
-      setTimeout(()=>{
-        MapsManager.getInstance().addWMSTile(this.descriptor);
-      }, 500)
-    }
+    MapsManager.getInstance().addWMSTile(this.descriptor);
   }
 
   aboutToDisappear() {

@@ -270,4 +270,13 @@ namespace rnoh {
         }
     };
 
+    class AIRMapClusterJSIBinder : public ViewComponentJSIBinder {
+        facebook::jsi::Object createNativeProps(facebook::jsi::Runtime &rt) override {
+            auto object = ViewComponentJSIBinder::createNativeProps(rt);
+            object.setProperty(rt, "distance", "int");
+            object.setProperty(rt, "clusterItems", "array");
+            return object;
+        }
+    };
+
 } // namespace rnoh

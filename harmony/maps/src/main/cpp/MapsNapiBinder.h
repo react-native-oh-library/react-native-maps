@@ -285,4 +285,19 @@ return ArkJS(env)
         };
     };
 
+    class AIRMapClusterNapiBinder : public ViewComponentNapiBinder {
+    public:
+        napi_value createProps(napi_env env, facebook::react::ShadowView const shadowView) override {
+            napi_value napiViewProps = ViewComponentNapiBinder::createProps(env, shadowView);
+            if (auto props = std::dynamic_pointer_cast<const facebook::react::AIRMapClusterProps>(shadowView.props)) {
+                    return ArkJS(env)
+                        .getObjectBuilder(napiViewProps)
+                        .addProperty("distance", props->distance)
+                        .addProperty("clusterItems", props->clusterItems)
+                        .build();
+            }
+            return napiViewProps;
+        };
+    };
+
 } //namespace rnoh

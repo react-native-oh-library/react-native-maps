@@ -21,6 +21,8 @@ export {default as Polygon, MapPolygon} from './MapPolygon';
 export type {MapPolygonProps} from './MapPolygon';
 export {default as Circle, MapCircle} from './MapCircle';
 export type {MapCircleProps} from './MapCircle';
+export {default as Cluster, MapCluster} from './MapCluster';
+export type {MapClusterProps} from './MapCluster';
 export {default as UrlTile, MapUrlTile} from './MapUrlTile';
 export type {MapUrlTileProps} from './MapUrlTile';
 export {default as WMSTile, MapWMSTile} from './MapWMSTile';

@@ -45,9 +45,7 @@ export struct AIRMapCalloutSubview {
       }
     )
 
-    setTimeout(()=>{
-      MapsManager.getInstance().addCalloutSubview(this.descriptor);
-    }, 500)
+    MapsManager.getInstance().addCalloutSubview(this.descriptor);
   }
 
   aboutToDisappear() {

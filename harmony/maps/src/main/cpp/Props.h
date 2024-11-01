@@ -257,5 +257,16 @@ namespace react {
         float opacity{};
     };
 
+    class JSI_EXPORT AIRMapClusterProps final : public ViewProps {
+    public:
+        AIRMapClusterProps() = default;
+        AIRMapClusterProps(const PropsParserContext &context, const AIRMapClusterProps &sourceProps,
+                           const RawProps &rawProps);
+
+    #pragma mark - Props
+        int distance{};
+        folly::dynamic clusterItems{};
+    };
+
 } // namespace react
 } // namespace facebook

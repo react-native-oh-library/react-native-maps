@@ -198,5 +198,11 @@ namespace react {
           tappable(convertRawProp(context, rawProps, "tappable", sourceProps.tappable, {false})),
           opacity(convertRawProp(context, rawProps, "opacity", sourceProps.opacity, {1.0})) {}
 
+    AIRMapClusterProps::AIRMapClusterProps(const PropsParserContext &context, const AIRMapClusterProps &sourceProps,
+                                           const RawProps &rawProps)
+        : ViewProps(context, sourceProps, rawProps),
+          distance(convertRawProp(context, rawProps, "distance", sourceProps.distance, {})),
+          clusterItems(convertRawProp(context, rawProps, "clusterItems", sourceProps.clusterItems, {})) {}
+
 } // namespace react
 } // namespace facebook

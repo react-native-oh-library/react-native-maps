@@ -17,6 +17,7 @@ import {MapLocalTile} from './MapLocalTile';
 import {MapMarker} from './MapMarker';
 import {MapPolygon} from './MapPolygon';
 import {MapPolyline} from './MapPolyline';
+import {MapCluster} from './MapCluster';
 import {MapUrlTile} from './MapUrlTile';
 import {MapWMSTile} from './MapWMSTile';
 
@@ -163,6 +164,7 @@ type Component =
   | typeof MapOverlay
   | typeof MapPolygon
   | typeof MapPolyline
+  | typeof MapCluster
   | typeof MapUrlTile
   | typeof MapWMSTile;
 
@@ -176,5 +178,6 @@ type ComponentName =
   | 'Overlay'
   | 'Polygon'
   | 'Polyline'
+  | 'Cluster'
   | 'UrlTile'
   | 'WMSTile';

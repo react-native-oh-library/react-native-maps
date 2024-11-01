@@ -203,3 +203,10 @@ export interface AIRMapOverlayRawProps extends ViewRawProps {
   opacity: number;
 }
 export type AIRMapOverlayDescriptor = Descriptor<"AIRMapOverlay", ViewBaseProps, AIRMapOverlayState, AIRMapOverlayRawProps>
+
+export interface AIRMapClusterState {}
+export interface AIRMapClusterRawProps extends ViewRawProps {
+  distance: number;
+  clusterItems: Array<{ position: LatLng }>;
+}
+export type AIRMapClusterDescriptor = Descriptor<"AIRMapCluster", ViewBaseProps, AIRMapClusterState, AIRMapClusterRawProps>

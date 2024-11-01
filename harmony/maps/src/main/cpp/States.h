@@ -66,5 +66,10 @@ class AIRMapOverlayState {
       AIRMapOverlayState() = default;
 };
 
+class AIRMapClusterState {
+  public:
+      AIRMapClusterState() = default;
+};
+
 } // namespace react
 } // namespace facebook

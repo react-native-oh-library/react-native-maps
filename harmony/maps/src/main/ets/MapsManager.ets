@@ -24,6 +24,7 @@ import { map, mapCommon } from '@kit.MapKit';
 import { RNComponentContext } from '@rnoh/react-native-openharmony';
 import { AIRMapCallout, AIR_MAP_CALLOUT_TYPE } from './AIRMaps/AIRMapCallout';
 import { AIR_MAP_CIRCLE_TYPE } from './AIRMaps/AIRMapCircle';
+import { AIR_MAP_CLUSTER_TYPE } from './AIRMaps/AIRMapCluster';
 import {  AIRMapMarkerDescriptor,
   AIRMapPolylineDescriptor,
   AIRMapPolygonDescriptor,
@@ -33,7 +34,8 @@ import {  AIRMapMarkerDescriptor,
   GeojsonDescriptor,
   AIRMapWMSTileDescriptor,
   AIRMapUrlTileDescriptor,
-  AIRMapOverlayDescriptor
+  AIRMapOverlayDescriptor,
+  AIRMapClusterDescriptor,
 } from './AIRMaps/AIRMapDescriptorTypes';
 import { AIRMapMarker, AIR_MAP_MARKER_TYPE } from './AIRMaps/AIRMapMarker';
 import { AIR_OVERLAY_TYPE } from './AIRMaps/AIRMapOverlay';
@@ -295,6 +297,24 @@ export class MapsManager {
         ctx.rnInstance.emitComponentEvent(this.eventNodeMap.get(image.getId()), AIR_OVERLAY_TYPE, { type: "onPress" });
       });
       return mapImage;
+    });
+  }
+
+  addCluster(desc: AIRMapClusterDescriptor, ctx: RNComponentContext) {
+    if (!this.mapController) {
+      LWError('addCluster error, mapController is undefined!');
+      return;
+    }
+    const mapClusterOptions: mapCommon.ClusterOverlayParams = {
+      distance: desc.rawProps.distance,
+      clusterItems: desc.rawProps.clusterItems,
+    };
+    return this.mapController.addClusterOverlay(mapClusterOptions).then(mapCluster => {
+      LWLog('MapsManager.addClusterOverlay----------mapCluster=' + JSON.stringify(mapCluster));
+      mapCluster.on("click", (cluster) => {
+        ctx.rnInstance.emitComponentEvent(desc.tag, AIR_MAP_CLUSTER_TYPE, { type: "onPress", points: JSON.stringify(cluster) });
+      });
+      return mapCluster;
     });
   }
 

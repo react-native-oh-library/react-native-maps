@@ -81,13 +81,7 @@ export struct AIRMapMarker {
         }
       }));
 
-    if (MapsManager.getInstance().isInitMapController()) {
-      this.setInstance();
-    } else {
-      setTimeout(()=>{
-        this.setInstance();
-      }, 500)
-    }
+    this.setInstance();
   }
 
   setInstance() {

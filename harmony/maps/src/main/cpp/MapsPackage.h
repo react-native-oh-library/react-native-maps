@@ -52,7 +52,9 @@ namespace rnoh {
                     facebook::react::concreteComponentDescriptorProvider<
                         facebook::react::AIRMapWMSTileComponentDescriptor>(),
                     facebook::react::concreteComponentDescriptorProvider<
-                        facebook::react::AIRMapOverlayComponentDescriptor>()};
+                        facebook::react::AIRMapOverlayComponentDescriptor>(),
+                    facebook::react::concreteComponentDescriptorProvider<
+                        facebook::react::AIRMapClusterComponentDescriptor>()};
         };
     
         ComponentJSIBinderByString createComponentJSIBinderByName() override {
@@ -66,7 +68,8 @@ namespace rnoh {
                     {"Geojson", std::make_shared<GeojsonJSIBinder>()},
                     {"AIRMapUrlTile", std::make_shared<AIRMapUrlTileJSIBinder>()},
                     {"AIRMapWMSTile", std::make_shared<AIRMapWMSTileJSIBinder>()},
-                    {"AIRMapOverlay", std::make_shared<AIRMapOverlayJSIBinder>()}};
+                    {"AIRMapOverlay", std::make_shared<AIRMapOverlayJSIBinder>()},
+                    {"AIRMapCluster", std::make_shared<AIRMapClusterJSIBinder>()}};
         };
 
         EventEmitRequestHandlers createEventEmitRequestHandlers() override {
@@ -76,6 +79,7 @@ namespace rnoh {
                     std::make_shared<AIRMapPolylineEventEmitRequestHandler>(),
                     std::make_shared<AIRMapCircleEventEmitRequestHandler>(),
                     std::make_shared<AIRMapOverlayEventEmitRequestHandler>(),
+                    std::make_shared<AIRMapClusterEventEmitRequestHandler>(),
                     std::make_shared<AIRMapCalloutEventEmitRequestHandler>(),
                     std::make_shared<AIRMapCalloutSubviewEventEmitRequestHandler>()};
         };

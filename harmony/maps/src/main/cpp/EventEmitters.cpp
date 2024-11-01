@@ -199,6 +199,15 @@ namespace react {
         });
     }
 
+    //------------------------AIRMapCluster------------------------------
+    void AIRMapClusterEventEmitter::onPress(onPressEvent event) const {
+        dispatchEvent("press", [event](jsi::Runtime &runtime) {
+            auto payload = jsi::Object(runtime);
+            payload.setProperty(runtime, "points", event.points);
+            return payload;
+        });
+    }
+
     //------------------------AIRMapCallout------------------------------
     void AIRMapCalloutEventEmitter::onPress(onPressEvent event) const {
         dispatchEvent("press", [event = std::move(event)](jsi::Runtime &runtime) {

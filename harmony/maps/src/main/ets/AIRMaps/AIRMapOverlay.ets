@@ -60,16 +60,6 @@ export struct AIRMapOverlay {
       }
     )
 
-    if (MapsManager.getInstance().isInitMapController()) {
-      this.setInstance();
-    } else {
-      setTimeout(() => {
-        this.setInstance();
-      }, 500)
-    }
-  }
-
-  setInstance() {
     MapsManager.getInstance().addOverlay(this.descriptor, this.ctx)?.then(instance => {
       this.instance = instance;
     });

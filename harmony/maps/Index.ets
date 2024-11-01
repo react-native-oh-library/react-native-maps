@@ -31,3 +31,4 @@ export * from './src/main/ets/AIRMaps/Geojson'
 export * from './src/main/ets/AIRMaps/AIRMapURLTile'
 export * from './src/main/ets/AIRMaps/AIRMapWMSTile'
 export * from './src/main/ets/AIRMaps/AIRMapOverlay'
+export * from './src/main/ets/AIRMaps/AIRMapCluster';

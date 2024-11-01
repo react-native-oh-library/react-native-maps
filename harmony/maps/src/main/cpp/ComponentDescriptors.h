@@ -27,6 +27,7 @@ namespace react {
     using AIRMapUrlTileComponentDescriptor = ConcreteComponentDescriptor<AIRMapUrlTileShadowNode>;
     using AIRMapWMSTileComponentDescriptor = ConcreteComponentDescriptor<AIRMapWMSTileShadowNode>;
     using AIRMapOverlayComponentDescriptor = ConcreteComponentDescriptor<AIRMapOverlayShadowNode>;
+    using AIRMapClusterComponentDescriptor = ConcreteComponentDescriptor<AIRMapClusterShadowNode>;
 
 } // namespace react
 } // namespace facebook

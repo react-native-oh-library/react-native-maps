@@ -467,4 +467,41 @@ public:
     };
 };
 
+enum AIRMapClusterEventType {
+    CLUSTER_PRESS = 0,
+};
+
+AIRMapClusterEventType getAIRMapClusterEventType(ArkJS &arkJs, napi_value eventObject) {
+    auto eventType = arkJs.getString(arkJs.getObjectProperty(eventObject, "type"));
+    if (eventType == "onPress") {
+        return AIRMapClusterEventType::CLUSTER_PRESS;
+    } else {
+        throw std::runtime_error("Unknown Page event type");
+    }
+}
+
+class AIRMapClusterEventEmitRequestHandler : public EventEmitRequestHandler {
+public:
+    void handleEvent(EventEmitRequestHandler::Context const &ctx) override {
+        if (ctx.eventName != "AIRMapCluster") {
+                    return;
+        }
+        ArkJS arkJs(ctx.env);
+        auto eventEmitter = ctx.shadowViewRegistry->getEventEmitter<react::AIRMapClusterEventEmitter>(ctx.tag);
+        if (eventEmitter == nullptr) {
+                    return;
+        }
+        switch (getAIRMapClusterEventType(arkJs, ctx.payload)) {
+            case AIRMapClusterEventType::CLUSTER_PRESS: {
+                auto points = arkJs.getString(arkJs.getObjectProperty(ctx.payload, "points"));
+                react::AIRMapClusterEventEmitter::onPressEvent event{points};
+                eventEmitter->onPress(event);
+                }
+                break;
+            default:
+                break;
+        }
+    };
+};
+
 } // namespace rnoh

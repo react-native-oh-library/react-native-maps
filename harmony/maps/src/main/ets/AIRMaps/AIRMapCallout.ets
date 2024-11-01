@@ -44,13 +44,7 @@ export struct AIRMapCallout {
         this.descriptor = (newDescriptor as AIRMapCalloutDescriptor)
       }
     )
-    if (MapsManager.getInstance().isInitMapController()) {
-      MapsManager.getInstance().addCallout(this);
-    }else {
-      setTimeout(()=>{
-        MapsManager.getInstance().addCallout(this);
-      }, 500)
-    }
+    MapsManager.getInstance().addCallout(this);
   }
 
   aboutToDisappear() {

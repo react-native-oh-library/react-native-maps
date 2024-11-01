@@ -51,6 +51,7 @@ export struct AIRMap {
   @BuilderParam public renderChildren: () => void
   @State descriptor: AIRMapDescriptor = {} as AIRMapDescriptor
   @State loadingEnabled: boolean = false;
+  @State initCompleted: boolean = false;
   protected cleanUpCallbacks: (() => void)[] = []
   private callback?: AsyncCallback<map.MapComponentController>;
   private mapController?: map.MapComponentController = undefined;
@@ -165,6 +166,7 @@ export struct AIRMap {
           }
         }
         MapsManager.getInstance().initMapComponentController(this.mapController)
+        this.initCompleted = true;
 
         // mapview
         this.mapController.on("mapLoad", () => {
@@ -414,13 +416,15 @@ export struct AIRMap {
       Stack() {
         // 调用MapComponent组件初始化地图
         MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback }).width('100%').height('100%');
-        ForEach(this.descriptor.childrenTags, (tag: Tag) => {
-          // this.ctx.wrappedRNChildrenBuilder.builder(this.ctx, tag)
-          mapsComponentFactoryBuilder(
-            this.ctx,
-            tag,
-            this.ctx.rnInstance.getComponentNameFromDescriptorType(this.ctx.descriptorRegistry.getDescriptor(tag)?.type))
-        }, (tag: Tag) => tag.toString())
+        if (this.initCompleted) {
+          ForEach(this.descriptor.childrenTags, (tag: Tag) => {
+            mapsComponentFactoryBuilder(
+              this.ctx,
+              tag,
+              this.ctx.rnInstance.getComponentNameFromDescriptorType(this.ctx.descriptorRegistry.getDescriptor(tag)?.type))
+          }, (tag: Tag) => tag.toString())
+        }
+
         if (this.loadingEnabled) {
           LoadingProgress()
             .color(this.descriptor.rawProps.loadingIndicatorColor)

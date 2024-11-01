@@ -44,13 +44,7 @@ export struct AIRMapUrlTile {
       }
     )
 
-    if (MapsManager.getInstance().isInitMapController()) {
-      MapsManager.getInstance().addURLTile(this.descriptor);
-    }else {
-      setTimeout(()=>{
-        MapsManager.getInstance().addURLTile(this.descriptor);
-      }, 500)
-    }
+    MapsManager.getInstance().addURLTile(this.descriptor);
   }
 
   aboutToDisappear() {
