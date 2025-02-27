@@ -77,3 +77,5 @@ example/ios/Config.xcconfig
 
 # testing
 /coverage
+harmony/maps/oh-package-lock.json5
+harmony/maps/BuildProfile.ets
