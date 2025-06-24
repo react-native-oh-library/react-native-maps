@@ -119,7 +119,7 @@ export type MapCircleProps = ViewProps & {
   zIndex?: number;
 };
 
-type NativeProps = MapCircleProps & {ref: React.RefObject<View>};
+type NativeProps = MapCircleProps & {ref: React.RefObject<View | null>};
 
 export class MapCircle extends React.Component<MapCircleProps> {
   // declaration only, as they are set through decorateMap
@@ -128,7 +128,7 @@ export class MapCircle extends React.Component<MapCircleProps> {
   getMapManagerCommand!: (name: string) => MapManagerCommand;
   getUIManagerCommand!: (name: string) => UIManagerCommand;
 
-  private circle: NativeProps['ref'];
+  private circle: React.RefObject<View | null>;
 
   constructor(props: MapCircleProps) {
     super(props);

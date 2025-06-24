@@ -323,7 +323,7 @@ export type NativeProps = Modify<
   OmittedProps,
   {icon?: string; image?: MapMarkerProps['image'] | string}
 > & {
-  ref: React.RefObject<MapMarkerNativeComponentType>;
+  ref: React.RefObject<MapMarkerNativeComponentType | null>;
 };
 
 export class MapMarker extends React.Component<MapMarkerProps> {
@@ -335,12 +335,12 @@ export class MapMarker extends React.Component<MapMarkerProps> {
 
   static Animated: Animated.AnimatedComponent<typeof MapMarker>;
 
-  private marker: NativeProps['ref'];
+  private marker: React.RefObject<MapMarkerNativeComponentType | null>;
 
   constructor(props: MapMarkerProps) {
     super(props);
 
-    this.marker = React.createRef<MapMarkerNativeComponentType>();
+    this.marker = React.createRef<MapMarkerNativeComponentType | null>();
     this.showCallout = this.showCallout.bind(this);
     this.hideCallout = this.hideCallout.bind(this);
     this.setCoordinates = this.setCoordinates.bind(this);

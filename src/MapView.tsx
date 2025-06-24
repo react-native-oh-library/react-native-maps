@@ -740,13 +740,13 @@ type State = {
 
 class MapView extends React.Component<MapViewProps, State> {
   static Animated: Animated.AnimatedComponent<typeof MapView>;
-  private map: NativeProps['ref'];
+  private map: React.RefObject<MapViewNativeComponentType | null>;
   private MapViewNativeComponent_harmony = TurboModuleRegistry.get('AIRMapManager');
 
   constructor(props: MapViewProps) {
     super(props);
 
-    this.map = React.createRef<MapViewNativeComponentType>();
+    this.map = React.createRef<MapViewNativeComponentType | null>();
 
     this.state = {
       // @ts-ignore
@@ -1158,7 +1158,7 @@ class MapView extends React.Component<MapViewProps, State> {
         onMapReady: this._onMapReady,
         liteMode: this.props.liteMode,
         googleMapId: this.props.googleMapId,
-        ref: this.map,
+        ref: this.map as React.RefObject<MapViewNativeComponentType>,
         customMapStyleString: this.props.customMapStyle
           ? JSON.stringify(this.props.customMapStyle)
           : undefined,
@@ -1183,7 +1183,7 @@ class MapView extends React.Component<MapViewProps, State> {
         googleMapId: this.props.googleMapId,
         initialRegion: this.props.initialRegion || null,
         initialCamera: this.props.initialCamera,
-        ref: this.map,
+        ref: this.map as React.RefObject<MapViewNativeComponentType>,
         onChange: this._onChange,
         onMapReady: this._onMapReady,
         onLayout: this.props.onLayout,

@@ -77,7 +77,7 @@ type NativeProps = Modify<
     >;
   }
 > & {
-  ref: React.RefObject<View>;
+  ref: React.RefObject<View | null>;
 };
 
 export class MapHeatmap extends React.Component<MapHeatmapProps> {
@@ -87,7 +87,7 @@ export class MapHeatmap extends React.Component<MapHeatmapProps> {
   getMapManagerCommand!: (name: string) => MapManagerCommand;
   getUIManagerCommand!: (name: string) => UIManagerCommand;
 
-  private heatmap: NativeProps['ref'];
+  private heatmap: React.RefObject<View | null>;
 
   constructor(props: MapHeatmapProps) {
     super(props);
