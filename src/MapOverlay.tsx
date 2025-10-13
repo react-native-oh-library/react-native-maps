@@ -94,7 +94,7 @@ export class MapOverlay extends React.Component<MapOverlayProps> {
     ) {
       image = this.props.image.uri;
     } else {
-      const sourceAsset = Image.resolveAssetSource(this.props.image) || {};
+      const sourceAsset = Image.resolveAssetSource(this.props.image) || { uri: undefined };
       image = sourceAsset.uri;
     }
 
